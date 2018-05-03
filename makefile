@@ -3,9 +3,16 @@
 
 default: info;
 
-all: 
-	cd ./bin && gcc -o progetto ../src/progetto.c
+all: in out in_handle
 
+in: 
+	cd ./bin && gcc -o in ../src/in.c 
+
+out: 
+	cd ./bin && gcc -o out ../src/out.c 
+
+in_handle:
+	cd ./bin && gcc -o in_handle ../src/in_handle.c
 
 build: creadirectory all
 
