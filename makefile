@@ -1,7 +1,7 @@
-.DEFAULT_GOAL := info
+#.DEFAULT_GOAL := info
 .PHONY: build clean default
 
-default: info;
+#default: info;
 
 all: in out in_handle
 
@@ -22,7 +22,5 @@ clean:
 creadirectory:
 	@mkdir -p ./bin
 
-info: 
-	cat file.txt
 
 

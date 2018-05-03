@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define PATH "in_config"
+#define PATH "../cfg/in_config"
 #define N 8
 
 // 0-5 eggs
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	char *line = NULL;
 	size_t len = 0;
 
-	pinfile = fopen("in_config", "r");
+	pinfile = fopen(PATH, "r");
 
 	if (NULL == pinfile)
 	{
@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
 		pid_t pid = fork();
 		if (pid == 0)
 		{
-			printf("kekko\n");
 			char str[2];
 			sprintf(str, "%d", pins[i]);
 
