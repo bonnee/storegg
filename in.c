@@ -12,9 +12,9 @@
 #define LOW 0
 #define HIGH 1
 
-#define PIN 4
+int pin;
 
-static int GPIOExport(int pin)
+static int GPIOExport()
 {
 	FILE *fd;
 
@@ -30,7 +30,7 @@ static int GPIOExport(int pin)
 	return (0);
 }
 
-static int GPIOUnexport(int pin)
+static int GPIOUnexport()
 {
 	FILE *fd;
 
@@ -46,7 +46,7 @@ static int GPIOUnexport(int pin)
 	return (0);
 }
 
-static int GPIODirection(int pin)
+static int GPIODirection()
 {
 	FILE *fd;
 
@@ -66,7 +66,7 @@ static int GPIODirection(int pin)
 	return (0);
 }
 
-static int GPIORead(int pin)
+static int GPIORead()
 {
 	char path[23988];
 	char value[1];
@@ -94,23 +94,30 @@ static int GPIORead(int pin)
 
 int main(int argc, char *argv[])
 {
+
+	if (argc <= 1)
+		return -1;
+
+	pin = atoi(argv[1]);
+	printf("Pin: %d\n", pin);
+
 	/*
 	 * Enable GPIO pins
 	 */
-	if (-1 == GPIOExport(PIN))
+	if (-1 == GPIOExport())
 		return (1);
 
 	/*
 	 * Set GPIO directions
 	 */
-	if (-1 == GPIODirection(PIN))
+	if (-1 == GPIODirection())
 		return (2);
 
-	int status = GPIORead(PIN);
+	int status = GPIORead();
 
 	do
 	{
-		int cur = GPIORead(PIN);
+		int cur = GPIORead();
 		if (status != cur)
 		{
 			status = cur;
@@ -120,7 +127,7 @@ int main(int argc, char *argv[])
 		usleep(100);
 	} while (1);
 
-	if (-1 == GPIOUnexport(PIN))
+	if (-1 == GPIOUnexport())
 		return (4);
 
 	return (0);

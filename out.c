@@ -12,9 +12,9 @@
 #define LOW 0
 #define HIGH 1
 
-#define PIN 18
+int pin;
 
-static int GPIOExport(int pin)
+static int GPIOExport()
 {
 	FILE *fd;
 
@@ -30,7 +30,7 @@ static int GPIOExport(int pin)
 	return (0);
 }
 
-static int GPIOUnexport(int pin)
+static int GPIOUnexport()
 {
 	FILE *fd;
 
@@ -46,7 +46,7 @@ static int GPIOUnexport(int pin)
 	return (0);
 }
 
-static int GPIODirection(int pin)
+static int GPIODirection()
 {
 	FILE *fd;
 
@@ -66,7 +66,7 @@ static int GPIODirection(int pin)
 	return (0);
 }
 
-static int GPIOWrite(int pin, int value)
+static int GPIOWrite(int value)
 {
 	FILE *fd;
 
@@ -88,16 +88,21 @@ static int GPIOWrite(int pin, int value)
 
 int main(int argc, char *argv[])
 {
+	if (argc <= 1)
+		return -1;
+
+	pin = atoi(argv[1]);
+
 	/*
 	 * Enable GPIO pins
 	 */
-	if (-1 == GPIOExport(PIN))
+	if (-1 == GPIOExport())
 		return (1);
 
 	/*
 	 * Set GPIO directions
 	 */
-	if (-1 == GPIODirection(PIN))
+	if (-1 == GPIODirection())
 		return (2);
 
 	int status = 0;
@@ -105,14 +110,14 @@ int main(int argc, char *argv[])
 	do
 	{
 		printf("writing %d\n", status);
-		GPIOWrite(PIN, status);
+		GPIOWrite(status);
 
 		status = !status;
 
 		sleep(1);
 	} while (1);
 
-	if (-1 == GPIOUnexport(PIN))
+	if (-1 == GPIOUnexport())
 		return (4);
 
 	return (0);
