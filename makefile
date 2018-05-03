@@ -3,7 +3,7 @@
 
 #default: info;
 
-all: in out in_handle
+all: in out in_handle out_handle
 
 in: 
 	cd ./bin && gcc -o in ../src/in.c 
@@ -13,6 +13,9 @@ out:
 
 in_handle:
 	cd ./bin && gcc -o in_handle ../src/in_handle.c
+
+out_handle:
+	cd ./bin && gcc -o out_handle ../src/out_handle.c
 
 build: creadirectory all
 
