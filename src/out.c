@@ -9,7 +9,7 @@
 
 int pin;
 
-static int GPIOExport()
+static int pinExport()
 {
 	FILE *fd;
 
@@ -25,7 +25,7 @@ static int GPIOExport()
 	return (0);
 }
 
-static int GPIOUnexport()
+static int pinUnexport()
 {
 	FILE *fd;
 
@@ -41,7 +41,7 @@ static int GPIOUnexport()
 	return (0);
 }
 
-static int GPIODirection()
+static int pinDirection()
 {
 	FILE *fd;
 
@@ -61,7 +61,7 @@ static int GPIODirection()
 	return (0);
 }
 
-static int GPIOWrite(int value)
+static int pinWrite(int value)
 {
 	FILE *fd;
 
@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
 	pin = atoi(argv[1]);
 	printf("Pin: %d\n", pin);
 
-	if (-1 == GPIOExport())
+	if (-1 == pinExport())
 		return (1);
 
-	if (-1 == GPIODirection())
+	if (-1 == pinDirection())
 		return (2);
 
 	int status = LOW;
@@ -100,14 +100,14 @@ int main(int argc, char *argv[])
 	do
 	{
 		printf("writing %d\n", status);
-		GPIOWrite(status);
+		pinWrite(status);
 
 		status = !status;
 
 		sleep(1);
 	} while (1);
 
-	if (-1 == GPIOUnexport())
+	if (-1 == pinUnexport())
 		return (4);
 
 	return (0);

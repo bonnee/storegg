@@ -9,7 +9,7 @@
 
 int pin;
 
-static int GPIOExport()
+static int pinExport()
 {
 	FILE *fd;
 
@@ -25,7 +25,7 @@ static int GPIOExport()
 	return (0);
 }
 
-static int GPIOUnexport()
+static int pinUnexport()
 {
 	FILE *fd;
 
@@ -41,7 +41,7 @@ static int GPIOUnexport()
 	return (0);
 }
 
-static int GPIODirection()
+static int pinDirection()
 {
 	FILE *fd;
 
@@ -61,7 +61,7 @@ static int GPIODirection()
 	return (0);
 }
 
-static int GPIORead()
+static int pinRead()
 {
 	char path[23988];
 	char value[1];
@@ -79,7 +79,7 @@ static int GPIORead()
 
 	if (-1 == read(fd, value, 1))
 	{
-		fprintf(stderr, "Failed to read value!\n");
+		fprintf(stderr, "Failed to pinRvalue!\n");
 		return (-1);
 	}
 
@@ -99,20 +99,20 @@ int main(int argc, char *argv[])
 	/*
 	 * Enable GPIO pins
 	 */
-	if (-1 == GPIOExport())
+	if (-1 == pinExport())
 		return (1);
 
 	/*
 	 * Set GPIO directions
 	 */
-	if (-1 == GPIODirection())
+	if (-1 == pinDirection())
 		return (2);
 
-	int status = GPIORead();
+	int status = pinRead();
 
 	do
 	{
-		int cur = GPIORead();
+		int cur = pinRead();
 		if (status != cur)
 		{
 			status = cur;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 		usleep(100);
 	} while (1);
 
-	if (-1 == GPIOUnexport())
+	if (-1 == pinUnexport())
 		return (4);
 
 	return (0);
