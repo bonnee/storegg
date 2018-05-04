@@ -4,9 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#define LOW 0
-#define HIGH 1
-
 int pin;
 
 static int pinExport()
@@ -16,7 +13,7 @@ static int pinExport()
 	fd = fopen("/sys/class/gpio/export", "w");
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open export for writing!\n");
+		fprintf(stderr, "%d: Failed to open export for writing!\n", pin);
 		return (-1);
 	}
 
@@ -32,7 +29,7 @@ static int pinUnexport()
 	fd = fopen("/sys/class/gpio/unexport", "w");
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open unexport for writing!\n");
+		fprintf(stderr, "%d: Failed to open unexport for writing!\n", pin);
 		return (-1);
 	}
 
@@ -52,7 +49,7 @@ static int pinDirection()
 
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open %d direction for writing!\n", pin);
+		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
 		return (-1);
 	}
 
@@ -73,13 +70,13 @@ static int pinRead()
 
 	if (-1 == fd)
 	{
-		fprintf(stderr, "Failed to open gpio value for reading!\n");
+		fprintf(stderr, "%d: Failed to open gpio value for reading!\n", pin);
 		return (-1);
 	}
 
 	if (-1 == read(fd, value, 1))
 	{
-		fprintf(stderr, "Failed to pinRvalue!\n");
+		fprintf(stderr, "%d: Failed to read\n", pin);
 		return (-1);
 	}
 

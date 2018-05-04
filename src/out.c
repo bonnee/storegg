@@ -16,7 +16,7 @@ static int pinExport()
 	fd = fopen("/sys/class/gpio/export", "w");
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open export for writing!\n");
+		fprintf(stderr, "%d: Failed to open export for writing!\n", pin);
 		return (-1);
 	}
 
@@ -32,7 +32,7 @@ static int pinUnexport()
 	fd = fopen("/sys/class/gpio/unexport", "w");
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open unexport for writing!\n");
+		fprintf(stderr, "%d: Failed to open unexport for writing!\n", pin);
 		return (-1);
 	}
 
@@ -52,7 +52,7 @@ static int pinDirection()
 
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open %d direction for writing!\n", pin);
+		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
 		return (-1);
 	}
 
@@ -72,7 +72,7 @@ static int pinWrite(int value)
 
 	if (NULL == fd)
 	{
-		fprintf(stderr, "Failed to open file for writing!\n");
+		fprintf(stderr, "%d: Failed to open file for writing!\n", pin);
 		return (-1);
 	}
 
