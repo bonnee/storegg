@@ -1,13 +1,8 @@
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-#define IN 0
-#define OUT 1
 
 #define LOW 0
 #define HIGH 1
@@ -92,20 +87,15 @@ int main(int argc, char *argv[])
 		return -1;
 
 	pin = atoi(argv[1]);
+	printf("Pin: %d\n", pin);
 
-	/*
-	 * Enable GPIO pins
-	 */
 	if (-1 == GPIOExport())
 		return (1);
 
-	/*
-	 * Set GPIO directions
-	 */
 	if (-1 == GPIODirection())
 		return (2);
 
-	int status = 0;
+	int status = LOW;
 
 	do
 	{
