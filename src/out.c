@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
 	int status = LOW;
 
-	do
+	while (1)
 	{
 		printf("writing %d\n", status);
 		pinWrite(status);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		status = !status;
 
 		sleep(1);
-	} while (1);
+	}
 
 	if (-1 == pinUnexport())
 		return (4);

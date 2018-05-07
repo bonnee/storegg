@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
 	int status = pinRead();
 
-	do
+	while (1)
 	{
 		int cur = pinRead();
 		if (status != cur)
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 		}
 
 		usleep(100);
-	} while (1);
+	}
 
 	if (-1 == pinUnexport())
 		return (4);
