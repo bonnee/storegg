@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "msg_queue.h"
 
 int pin;
 
@@ -105,15 +106,19 @@ int main(int argc, char *argv[])
 	if (-1 == pinDirection())
 		return (2);
 
-	int status = pinRead();
+	message msg;
+	msg.pin = pin;
+	msg.state = pinRead();
+
+	int msgid = create_id(1);
 
 	while (1)
 	{
 		int cur = pinRead();
-		if (status != cur)
+		if (msg.state != cur)
 		{
-			status = cur;
-			printf("IL VALORE È CAMBIATO!!!11!\n");
+			msg.state = cur;
+			send(msgid, &msg);
 		}
 
 		usleep(100);

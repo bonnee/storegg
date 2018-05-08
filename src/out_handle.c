@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "msg_queue.h"
 
 #define PATH "../cfg/out_config"
 #define N 8
@@ -43,6 +44,22 @@ int main(int argc, char *argv[])
 			char *args[] = {"./out", str, NULL};
 			execvp(args[0], args);
 		}
+	}
+
+	message msg;
+	int msgid = create_id(0);
+	int state = 0;
+
+	while (1)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			msg.pin = pins[i];
+			msg.state = !state;
+			send(msgid, &msg);
+		}
+		state = msg.state;
+		usleep(1000000);
 	}
 
 	wait(NULL);

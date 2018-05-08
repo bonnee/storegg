@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "msg_queue.h"
 
 #define PATH "../cfg/in_config"
 #define N 8
@@ -45,6 +46,15 @@ int main(int argc, char *argv[])
 			char *args[] = {"./in", str, NULL};
 			execvp(args[0], args);
 		}
+	}
+
+	message msg;
+	int msgid = create_id(1);
+
+	while (1)
+	{
+		receive(msgid, &msg, 0);
+		printf("receive %d: %d\n", msg.pin, msg.state);
 	}
 
 	wait(NULL);
