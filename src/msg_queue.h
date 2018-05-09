@@ -8,12 +8,32 @@ typedef struct hw_buffer
 	int state;
 } message;
 
-int create_id(int in)
+typedef struct sw_buffer
 {
-	char *file = "../cfg/out_config";
+	long type;
+	int state[8];
+} swbuffer;
 
-	if (in)
-		file = "../cfg/in_config";
+int create_id(int id_queue)
+{
+	char *file;
+
+	if (id_queue == 0)
+	{
+		file = "../tmp/out";
+	}
+	else if (id_queue == 1)
+	{
+		file = "../tmp/in";
+	}
+	else if (id_queue == 2)
+	{
+		file = "../tmp/handler";
+	}
+	else
+	{
+		return -1;
+	}
 
 	return msgget(ftok(file, 1), 0666 | IPC_CREAT);
 }
@@ -23,7 +43,7 @@ int send(int key, const void *buf)
 	return msgsnd(key, buf, sizeof(buf), 0);
 }
 
-ssize_t receive(int key, void *msg, long pin)
+ssize_t receive(int key, void *msg, long filter)
 {
-	return msgrcv(key, msg, sizeof(msg), pin, 0);
+	return msgrcv(key, msg, sizeof(msg), filter, 0);
 }

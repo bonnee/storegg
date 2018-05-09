@@ -11,7 +11,7 @@
 // 0-5 eggs
 // 6-7 storage
 int pins[N];
-int values[N];
+swbuffer values;
 
 int main(int argc, char *argv[])
 {
@@ -28,14 +28,14 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < N; i++) // Read config
 	{
 		getline(&line, (size_t *)&len, pinfile);
 		pins[i] = atoi(line);
 	}
 	fclose(pinfile);
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < N; i++) // Create children
 	{
 		pid_t pid = fork();
 		if (pid == 0)
@@ -48,13 +48,39 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	for (int i = 0; i < N; i++) // Init values
+	{
+		values.state[i] = 0;
+	}
+
 	message msg;
-	int msgid = create_id(1);
+
+	int hw_id = create_id(1);
+	int handler_id = create_id(2);
+
+	values.type = 1;
 
 	while (1)
 	{
-		receive(msgid, &msg, 0);
-		printf("receive %d: %d\n", msg.pin, msg.state);
+		receive(hw_id, &msg, 0);
+
+		int index;
+
+		for (index = 0; index < N && pins[index] != msg.pin; index++)
+			;
+
+		values.state[index] = msg.state;
+
+		printf("in_handle: ");
+		for (int i = 0; i < N; i++)
+		{
+			printf("%d", values.state[i]);
+		}
+		printf("\n");
+
+		send(handler_id, &values);
+
+		//printf("receive %d: %d\n", msg.pin, msg.state);
 	}
 
 	wait(NULL);

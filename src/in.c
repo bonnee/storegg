@@ -1,89 +1,6 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include "msg_queue.h"
+#include "io.h"
 
 int pin;
-
-static int pinExport()
-{
-	FILE *fd;
-
-	fd = fopen("/sys/class/gpio/export", "w");
-	if (NULL == fd)
-	{
-		fprintf(stderr, "%d: Failed to open export for writing!\n", pin);
-		return (-1);
-	}
-
-	fprintf(fd, "%d", pin);
-	fclose(fd);
-	return (0);
-}
-
-static int pinUnexport()
-{
-	FILE *fd;
-
-	fd = fopen("/sys/class/gpio/unexport", "w");
-	if (NULL == fd)
-	{
-		fprintf(stderr, "%d: Failed to open unexport for writing!\n", pin);
-		return (-1);
-	}
-
-	fprintf(fd, "%d", pin);
-	fclose(fd);
-	return (0);
-}
-
-static int pinDirection()
-{
-	FILE *fd;
-
-	char *path;
-	sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
-
-	fd = fopen(path, "w");
-
-	if (NULL == fd)
-	{
-		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
-		return (-1);
-	}
-
-	fprintf(fd, "in");
-	fclose(fd);
-	return (0);
-}
-
-static int pinRead()
-{
-	char path[23988];
-	char value[1];
-	int fd;
-
-	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
-
-	fd = open(path, O_RDONLY);
-
-	if (-1 == fd)
-	{
-		fprintf(stderr, "%d: Failed to open gpio value for reading!\n", pin);
-		return (-1);
-	}
-
-	if (-1 == read(fd, value, 1))
-	{
-		fprintf(stderr, "%d: Failed to read\n", pin);
-		return (-1);
-	}
-
-	close(fd);
-	return (atoi(value));
-}
 
 int main(int argc, char *argv[])
 {
@@ -97,34 +14,35 @@ int main(int argc, char *argv[])
 	/*
 	 * Enable GPIO pins
 	 */
-	if (-1 == pinExport())
+	if (-1 == pinExport(pin))
 		return (1);
 
 	/*
 	 * Set GPIO directions
 	 */
-	if (-1 == pinDirection())
+	if (-1 == pinDirection(pin, 0))
 		return (2);
 
 	message msg;
 	msg.pin = pin;
-	msg.state = pinRead();
+	msg.state = pinRead(pin);
 
 	int msgid = create_id(1);
 
 	while (1)
 	{
-		int cur = pinRead();
+		int cur = pinRead(pin);
+		//printf("%d = %d\n", cur, msg.state);
+
 		if (msg.state != cur)
 		{
 			msg.state = cur;
 			send(msgid, &msg);
 		}
-
-		usleep(100);
+		sleep(0);
 	}
 
-	if (-1 == pinUnexport())
+	if (-1 == pinUnexport(pin))
 		return (4);
 
 	return (0);

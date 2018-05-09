@@ -9,7 +9,7 @@
 #define N 8
 
 int pins[N];
-int values[N];
+swbuffer values;
 
 int main(int argc, char *argv[])
 {
@@ -47,19 +47,27 @@ int main(int argc, char *argv[])
 	}
 
 	message msg;
+
 	int msgid = create_id(0);
-	int state = 0;
+	int handler_id = create_id(2);
+
+	/*for (int i = 0; i < N; i++)
+	{
+		values.state[i] = 0;
+	}*/
 
 	while (1)
 	{
+		receive(handler_id, &values, 2);
+
 		for (int i = 0; i < N; i++)
 		{
-			msg.pin = pins[i];
-			msg.state = !state;
+			printf("%d", values.state[i]);
+			msg.pin = pins[i]; // Convert pin to phisical number
+			msg.state = values.state[i];
 			send(msgid, &msg);
 		}
-		state = msg.state;
-		usleep(1000000);
+		printf("\n");
 	}
 
 	wait(NULL);
