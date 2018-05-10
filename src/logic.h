@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+//custom basic pow function for int parameters
+int my_pow(int x, int y){
+    if(y == 0)
+        return 1;
+
+    int res = 0;
+    for(int i = 0; i < y; i++)
+        res += x;
+    return res;
+}
+
+//function that convert decimal num to binary writing into an array with a specified delay from first pos
+void num_to_bin(int num, int n_bit, int ar_delay, int* array){
+    for(int i = n_bit - 1; i >= 0; i--){
+        int num_pow = my_pow(2, i);
+        if(num >= num_pow){
+            array[(n_bit - 1 - i) + ar_delay] = 1;
+            num -= num_pow;
+        }
+    }
+}
+
+void calc_output(int* input, int* output){
+
+    int num_eggs = 0;
+    //count eggs
+    for(int i = 0; i < 6; i++){
+        num_eggs += input[i];
+    }
+
+    int mag_min = 0;
+    int start = 6;
+    //count min eggs in storage
+    for(int i = start; i < start + 2; i++){
+        mag_min += my_pow(2, 1 - (i - start)) * input[i];
+    }
+
+    printf("num_eggs: %d\n", num_eggs);
+    printf("mag_min: %d\n", mag_min);
+
+    // [bit 0-2] 
+    //number of eggs in binary
+    num_to_bin(num_eggs, 3, 0, output);
+
+    // [bit 3-4]
+    //check to move eggs from storage
+    if(num_eggs < 6 && mag_min > 0)
+    {
+        int eggs_to_move = 6 - num_eggs;
+        if(eggs_to_move > mag_min) //not enough in storage
+            eggs_to_move = mag_min;
+
+        num_to_bin(eggs_to_move, 2, 3, output);
+    }
+
+    // [bit 5-7]
+    //check to order eggs to storage
+    if(mag_min < 3 && num_eggs + mag_min < 6){ //know exactly num storage eggs and need some other
+        int order_eggs = 5 - mag_min; //order eggs to make full storage
+        num_to_bin(order_eggs, 3, 5, output);
+    }
+}
