@@ -1,4 +1,5 @@
 #include <sys/wait.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,10 +10,20 @@
 #define N 8
 
 int pins[N];
-swbuffer values;
+int out_id;
+
+void sighandle_int(int sig)
+{
+	printf("out_handle...");
+	if (-1 == clear_queue(out_id))
+		exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sighandle_int);
+
 	FILE *pinfile;
 
 	char *line = NULL;
@@ -46,26 +57,38 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	message msg;
-
-	int msgid = create_id(0);
+	out_id = create_id(0);
 	int handler_id = create_id(2);
+	//printf("msgid: %d handleid: %d", msgid, handler_id);
 
 	/*for (int i = 0; i < N; i++)
 	{
 		values.state[i] = 0;
 	}*/
+	message msg;
 
 	while (1)
 	{
-		receive(handler_id, &values, 2);
+		swbuffer values;
+
+		receive(handler_id, &values, sizeof(values), 2);
+
+		//printf("%d", pins[1]);
+
+		//msg.pin = 8;
+		//msg.state = values;
+		//printf("out_handle: %d\n", out_id);
+		fflush(stdout);
+
+		//printf("senddemmerda %d\n", send(out_id, &msg, sizeof(msg)));
 
 		for (int i = 0; i < N; i++)
 		{
-			printf("%d", values.state[i]);
+			printf("%d ", values.state[i]);
 			msg.pin = pins[i]; // Convert pin to phisical number
 			msg.state = values.state[i];
-			send(msgid, &msg);
+
+			send(out_id, &msg, sizeof(msg));
 		}
 		printf("\n");
 	}

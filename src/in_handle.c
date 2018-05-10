@@ -1,4 +1,5 @@
 #include <sys/wait.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,9 +13,19 @@
 // 6-7 storage
 int pins[N];
 swbuffer values;
+int in_id;
+
+void sighandle_int(int sig)
+{
+	printf("in_handle...");
+	if (-1 == clear_queue(in_id))
+		exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sighandle_int);
 	FILE *pinfile;
 
 	char *line = NULL;
@@ -53,16 +64,15 @@ int main(int argc, char *argv[])
 		values.state[i] = 0;
 	}
 
-	message msg;
-
-	int hw_id = create_id(1);
+	in_id = create_id(1);
 	int handler_id = create_id(2);
 
 	values.type = 1;
 
 	while (1)
 	{
-		receive(hw_id, &msg, 0);
+		message msg;
+		receive(in_id, &msg, sizeof(msg), 0);
 
 		int index;
 
@@ -71,16 +81,16 @@ int main(int argc, char *argv[])
 
 		values.state[index] = msg.state;
 
-		printf("in_handle: ");
+		/*printf("in_handle: ");
 		for (int i = 0; i < N; i++)
 		{
-			printf("%d", values.state[i]);
+			printf("%d ", values.state[i]);
 		}
-		printf("\n");
+		printf("\n");*/
 
-		send(handler_id, &values);
+		send(handler_id, &values, sizeof(values));
 
-		//printf("receive %d: %d\n", msg.pin, msg.state);
+		printf("receive %d: %d\n", msg.pin, msg.state);
 	}
 
 	wait(NULL);

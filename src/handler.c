@@ -1,4 +1,5 @@
 #include <sys/wait.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,10 +8,19 @@
 
 #define N 8
 
-int values[N];
+int msgid;
+
+void sighandle_int(int sig)
+{
+	printf("Exiting...");
+	if (-1 == clear_queue(msgid))
+		exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sighandle_int);
 	for (int i = 0; i < 2; i++)
 	{
 		pid_t pid = fork();
@@ -20,23 +30,33 @@ int main(int argc, char *argv[])
 			execvp(args[0], args);
 		}
 	}
-
-	int msgid = create_id(2);
-	swbuffer values;
+	/*values.type = 1;
+	for (int i = 0; i < N; i++)
+	{
+		values.state[i] = 0;
+	}*/
+	msgid = create_id(2);
 
 	while (1)
 	{
-		receive(msgid, &values, 1);
+		swbuffer values;
+
+		//printf("%d", sizeof(values));
+		receive(msgid, &values, sizeof(values), 1);
+
+		swbuffer sendvalues;
+		sendvalues.type = 2;
 
 		printf("handler: ");
 		for (int i = 0; i < N; i++)
 		{
-			printf("%d", values.state[i]);
+			sendvalues.state[i] = values.state[i];
+
+			printf("%d ", sendvalues.state[i]);
 		}
 		printf("\n");
 
-		values.type = 2;
-		send(msgid, &values);
+		send(msgid, &sendvalues, sizeof(sendvalues));
 	}
 	wait(NULL);
 }

@@ -20,14 +20,22 @@ int main(int argc, char *argv[])
 
 	int status = LOW;
 
-	message msg;
 	int msgid = create_id(0);
+	//printf("msgid: %d\n", msgid);
 
+	message msg;
 	while (1)
 	{
-		receive(msgid, &msg, pin);
-		//printf("%d received %d: %d\n", pin, msg.pin, msg.state);
+		receive(msgid, &msg, sizeof(msg), pin);
+		printf("%d received %d: %d\n", pin, msg.pin, msg.state);
 		pinWrite(pin, msg.state);
+
+		int rc;
+		struct msqid_ds buf;
+		rc = msgctl(msgid, IPC_STAT, &buf);
+		printf("Messages: %d\n", buf.msg_qnum);
+
+		//sleep(1);
 	}
 
 	if (-1 == pinUnexport(pin))

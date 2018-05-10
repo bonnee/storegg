@@ -28,22 +28,28 @@ int create_id(int id_queue)
 	}
 	else if (id_queue == 2)
 	{
-		file = "../tmp/handler";
+		file = "../tmp/keke";
 	}
 	else
 	{
+		printf("Wrong id_queue\n");
 		return -1;
 	}
 
 	return msgget(ftok(file, 1), 0666 | IPC_CREAT);
 }
 
-int send(int key, const void *buf)
+int clear_queue(int key)
 {
-	return msgsnd(key, buf, sizeof(buf), 0);
+	return msgctl(key, IPC_RMID, NULL);
 }
 
-ssize_t receive(int key, void *msg, long filter)
+int send(int key, const void *buf, size_t size)
 {
-	return msgrcv(key, msg, sizeof(msg), filter, 0);
+	return msgsnd(key, buf, size, 0);
+}
+
+ssize_t receive(int key, void *msg, size_t size, long filter)
+{
+	return msgrcv(key, msg, size, filter, 0);
 }

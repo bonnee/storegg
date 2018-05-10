@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
 		if (msg.state != cur)
 		{
 			msg.state = cur;
-			send(msgid, &msg);
+			send(msgid, &msg, sizeof(msg));
 		}
-		sleep(0);
+		usleep(1);
 	}
 
 	if (-1 == pinUnexport(pin))
