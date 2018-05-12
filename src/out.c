@@ -27,15 +27,8 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		receive(msgid, &msg, sizeof(msg), pin);
-		printf("%d received %d: %d\n", pin, msg.pin, msg.state);
+		//printf("%d received %d: %d\n", pin, msg.pin, msg.state);
 		pinWrite(pin, msg.state);
-
-		int rc;
-		struct msqid_ds buf;
-		rc = msgctl(msgid, IPC_STAT, &buf);
-		printf("Messages: %d\n", buf.msg_qnum);
-
-		//sleep(1);
 	}
 
 	if (-1 == pinUnexport(pin))
