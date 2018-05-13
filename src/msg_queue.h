@@ -46,10 +46,10 @@ int clear_queue(int key)
 
 int send(int key, const void *buf, size_t size)
 {
-	return msgsnd(key, buf, size, 0);
+	return msgsnd(key, buf, size-sizeof(long), 0);
 }
 
 ssize_t receive(int key, void *msg, size_t size, long filter)
 {
-	return msgrcv(key, msg, size, filter, 0);
+	return msgrcv(key, msg, size-sizeof(long), filter, 0);
 }

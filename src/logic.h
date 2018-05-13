@@ -3,13 +3,10 @@
 
 //custom basic pow function for int parameters
 int my_pow(int x, int y){
-    if(y == 0)
-        return 1;
-
-    int res = 0;
-    for(int i = 0; i < y; i++)
-        res += x;
-    return res;
+	int res = 1;
+	for(int i = 0; i < y; i++)
+		res *= x;
+	return res;
 }
 
 //function that convert decimal num to binary writing into an array with a specified delay from first pos
