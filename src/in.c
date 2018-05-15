@@ -6,7 +6,8 @@ int pin;
 void sighandle_int(int sig)
 {
 	//printf("I'm unexporting pins\n");
-	if (pinUnexport(pin) == -1){
+	if (pinUnexport(pin) == -1)
+	{
 		printf("Failed\n");
 		fflush(stdout);
 		exit(EXIT_FAILURE);
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 			msg.state = cur;
 			send(msgid, &msg, sizeof(msg));
 		}
-		usleep(1);
+		usleep(100000); // Don't kill CPU please
 	}
 
 	if (-1 == pinUnexport(pin))
