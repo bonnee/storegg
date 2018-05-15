@@ -13,6 +13,7 @@ int N = 8;
 int *pins;
 int out_id;
 
+//deletes and clears the messaque queue when exiting (ctrl+C)
 void sighandle_int(int sig)
 {
 	printf("out_handle...");
@@ -23,8 +24,10 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
+	//replaces the standard sigint handler
 	signal(SIGINT, sighandle_int);
 
+	//controls if the n° of parameters is correct
     if(argc != 2){
         printf("Invalid number of parameters");
         return 1;
@@ -33,67 +36,71 @@ int main(int argc, char *argv[])
     N = atoi(argv[1]) + 2; //N bit output + 2 bit for storage
 	pins = (int*) malloc(N * sizeof(int));
 
-
+	//reads the numbers of output pins from a config file
 	FILE *pinfile;
 
 	char *line = NULL;
 	size_t len = 0;
 
+	//tries to open the out_config file
 	pinfile = fopen(PATH, "r");
-
 	if (NULL == pinfile)
 	{
 		printf("No config\n");
 		return -1;
 	}
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < N; i++) // Read out_config
 	{
 		getline(&line, (size_t *)&len, pinfile);
+		//saves the numbers of pins in an array
 		pins[i] = atoi(line);
 	}
 	fclose(pinfile);
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < N; i++) // Create children for each pin
 	{
 		pid_t pid = fork();
+
+		if (pid < 0) 
+		{
+			printf("Failed to fork the processes");
+			return -1;
+		}
 		if (pid == 0)
 		{
 			char str[2];
 			sprintf(str, "%d", pins[i]);
-
+			//passes the number of pin as input in order to know which pin it's referring to
 			char *args[] = {"./out", str, NULL};
 			execvp(args[0], args);
 		}
 	}
 
+	//creates the output queue to communicate with the singles out_pins processes
 	out_id = create_id(0);
+	//creates the handler queue to communicate with the handler
 	int handler_id = create_id(2);
-	//printf("msgid: %d handleid: %d", msgid, handler_id);
 
-	/*for (int i = 0; i < N; i++)
-	{
-		values.state[i] = 0;
-	}*/
 	message msg;
 
 	while (1)
 	{
 		swbuffer values;
-
+		//receives the message from the handler queue containing the output array
 		receive(handler_id, &values, sizeof(values), 2);
 
 		for (int i = 0; i < N; i++)
 		{
-			//printf("%d ", values.state[i]);
-			msg.pin = pins[i]; // Convert pin to phisical number
-			msg.state = values.state[i];
-
+			msg.pin = pins[i]; // Converts pin to phisical number, it sets the type of the message equal to the pin number
+			msg.state = values.state[i]; //sets the pin value reading the output array
+			//sends the message to the singles out processes through the output queue
 			send(out_id, &msg, sizeof(msg));
 		}
 		printf("\n");
 	}
 
+	//the parent process waits till the child processes are done
 	wait(NULL);
 	return 0;
 }
