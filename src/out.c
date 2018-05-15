@@ -1,4 +1,5 @@
 #include "io.h"
+#include "msg_queue.h"
 #include <signal.h>
 
 int pin;

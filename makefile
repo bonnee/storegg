@@ -9,10 +9,10 @@ main:
 	cd ./bin && gcc -o main ../src/main.c
 
 in: 
-	cd ./bin && gcc -o in ../src/in.c 
+	cd ./bin && gcc -o in ../src/in.c ../src/io.c
 
 out: 
-	cd ./bin && gcc -o out ../src/out.c 
+	cd ./bin && gcc -o out ../src/out.c ../src/io.c
 
 in_handle:
 	cd ./bin && gcc -o in_handle ../src/in_handle.c

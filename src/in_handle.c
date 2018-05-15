@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 		send(handler_id, &values, sizeof(values));
 
-		printf("receive %d: %d\n", msg.pin, msg.state);
+		printf("receive %ld: %d\n", msg.pin, msg.state);
 	}
 
 	wait(NULL);
