@@ -8,14 +8,14 @@
 
 typedef struct hw_buffer
 {
-	long pin; // pin fisico
-	int state;
+	long pin; // physical pin
+	int state; //value, bit 1/0
 } message;
 
 typedef struct sw_buffer
 {
 	long type;
-	int state[8];
+	int state[8]; //values of all the pins
 } swbuffer;
 
 int create_id(int id_queue);

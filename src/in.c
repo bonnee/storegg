@@ -4,13 +4,11 @@
 
 int pin;
 
+//when the process is closed, it unExports pins
 void sighandle_int(int sig)
 {
-	//printf("I'm unexporting pins\n");
 	if (pinUnexport(pin) == -1)
 	{
-		printf("Failed\n");
-		fflush(stdout);
 		exit(EXIT_FAILURE);
 	}
 	exit(EXIT_SUCCESS);
@@ -18,45 +16,48 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
+	//replaces the standard sigint handler
 	signal(SIGINT, sighandle_int);
 
+	//Error, it means that there is no pin number passed as parameter
 	if (argc <= 1)
 		return -1;
 
+	//converts the argument of the function into an int number
 	pin = atoi(argv[1]);
-	printf("Pin: %d\n", pin);
+	//printf("Pin: %d\n", pin);
 
-	/*
-	 * Enable GPIO pins
-	 */
+	//Enable GPIO pins
 	if (-1 == pinExport(pin))
 		return (1);
-	/*
-	 * Set GPIO directions
-	 */
+
+	//Set GPIO directions
 	if (-1 == pinDirection(pin, 0))
 		return (2);
 
 	message msg;
+	//set the message type and the value (reading the value of the pin)
 	msg.pin = pin;
 	msg.state = pinRead(pin);
 
+	//creates the input queue to communicate with the in_handle
 	int msgid = create_id(1);
 
 	while (1)
 	{
+		//keeps reading the values from in_pins
 		int cur = pinRead(pin);
 
 		if (msg.state != cur)
 		{
-
-			//printf("%d = %d\n", cur, msg.state);
+			//if the value changes then it creates a message and sends it
 			msg.state = cur;
 			send(msgid, &msg, sizeof(msg));
 		}
-		usleep(100000); // Don't kill CPU please
+		usleep(100000); // It's need not to kill CPU 
 	}
 
+	//in teoria questa parte di codice è inutile, non arriverà mai
 	if (-1 == pinUnexport(pin))
 		return (4);
 

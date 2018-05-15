@@ -56,7 +56,13 @@ int main(int argc, char *argv[])
 		//saves the numbers of pins in an array
 		pins[i] = atoi(line);
 	}
-	fclose(pinfile);
+	//tries to close the file where it's reading the pins' values
+	if(fclose(pinfile) == -1)
+	{
+		printf("Failed to close file");
+		return -1;
+	}
+
 
 	for (int i = 0; i < N; i++) // Create children for each pin
 	{
