@@ -1,9 +1,12 @@
-#.DEFAULT_GOAL := info
+.DEFAULT_GOAL := build
 .PHONY: build clean default
 
-#default: info;
+default: build;
 
-all: in out in_handle out_handle handler
+all: in out in_handle out_handle handler main
+
+main: 
+	cd ./bin && gcc -o main ../src/main.c
 
 in: 
 	cd ./bin && gcc -o in ../src/in.c 
