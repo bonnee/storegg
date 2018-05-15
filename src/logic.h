@@ -16,11 +16,18 @@ void num_to_bin(int num, int n_bit, int ar_delay, int* array){
         if(num >= num_pow){
             array[(n_bit - 1 - i) + ar_delay] = 1;
             num -= num_pow;
+        } else {
+            array[(n_bit - 1 - i) + ar_delay] = 0;
         }
     }
 }
 
 void calc_output(int* input, int* output){
+
+    //initialization
+    for(int i=0;i<8;i++){
+        output[i] = 0;
+    }
 
     int num_eggs = 0;
     //count eggs
@@ -49,7 +56,7 @@ void calc_output(int* input, int* output){
         int eggs_to_move = 6 - num_eggs;
         if(eggs_to_move > mag_min) //not enough in storage
             eggs_to_move = mag_min;
-
+        printf("Eggs to move: %d",eggs_to_move);
         num_to_bin(eggs_to_move, 2, 3, output);
     }
 

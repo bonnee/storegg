@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "msg_queue.h"
+#include "logic.h"
 
 #define N 8
 
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 	signal(SIGINT, sighandle_int);
 	for (int i = 0; i < 2; i++)
 	{
+		//fork the input and output handlers
 		pid_t pid = fork();
 		if (pid == 0)
 		{
@@ -30,32 +32,40 @@ int main(int argc, char *argv[])
 			execvp(args[0], args);
 		}
 	}
-	/*values.type = 1;
-	for (int i = 0; i < N; i++)
-	{
-		values.state[i] = 0;
-	}*/
+
+	//creates the queue to communicate with the two handlers
 	msgid = create_id(2);
 
 	while (1)
 	{
 		swbuffer values;
 
-		//printf("%d", sizeof(values));
+		//receives the input array
 		receive(msgid, &values, sizeof(values), 1);
 
 		swbuffer sendvalues;
+		//type=2 to be received only by out_handle
 		sendvalues.type = 2;
 
 		printf("handler: ");
 		for (int i = 0; i < N; i++)
 		{
-			sendvalues.state[i] = values.state[i];
+			//sendvalues.state[i] = values.state[i];
+			printf("%d ", values.state[i]);
+		}
+		printf("\n");
 
+		//calculates the output array
+		calc_output(values.state,sendvalues.state);
+
+		printf("output array: ");
+		for (int i = 0; i < N; i++)
+		{
 			printf("%d ", sendvalues.state[i]);
 		}
 		printf("\n");
 
+		// send the output array to the output handler
 		send(msgid, &sendvalues, sizeof(sendvalues));
 	}
 	wait(NULL);
