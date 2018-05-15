@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#define MAX_NUM_EGGS 20
+
 typedef struct hw_buffer
 {
 	long pin; // physical pin
@@ -15,7 +17,7 @@ typedef struct hw_buffer
 typedef struct sw_buffer
 {
 	long type;
-	int state[8]; //values of all the pins
+	int state[MAX_NUM_EGGS]; //values of all the input or output pins 1/0
 } swbuffer;
 
 int create_id(int id_queue);

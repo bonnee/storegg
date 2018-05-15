@@ -7,7 +7,7 @@
 #include "msg_queue.h"
 #include "logic.h"
 
-#define N 8
+int N = 8;
 
 int msgid;
 
@@ -30,6 +30,15 @@ int main(int argc, char *argv[])
         printf("Invalid number of parameters");
         return 1;
     }
+
+	//gets the number of eggs passed as a parameter
+	N = atoi(argv[1]);
+
+	//Check if the number of eggs choosen by the user can be managed by the program
+	if(N > MAX_NUM_EGGS){
+		printf("Number of eggs to high!");
+		return 2;
+	}
 
     for (int i = 0; i < 2; i++)
 	{
@@ -73,8 +82,8 @@ int main(int argc, char *argv[])
 		//calculates the output array
 		calc_output(values.state,sendvalues.state);
 
+		//print the calculated array to debug it easily
 		printf("output array: ");
-		// bisogna cambiare il valore di N e prenderlo dai parametri
 		for (int i = 0; i < N; i++)
 		{
 			printf("%d ", sendvalues.state[i]);
