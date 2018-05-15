@@ -1,9 +1,21 @@
 #include "io.h"
+#include <signal.h>
 
 int pin;
 
+void sighandle_int(int sig)
+{
+	//printf("exiting/n");
+	if (pinUnexport(pin) == -1)
+		exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char *argv[])
 {
+
+	signal(SIGINT, sighandle_int);
+
 	if (argc <= 1)
 		return -1;
 
@@ -13,7 +25,8 @@ int main(int argc, char *argv[])
 	if (-1 == pinExport(pin))
 		return (1);
 
-	sleep(1); // brutto
+	//sleep(1);
+	//usleep(pin*20000); // brutto
 
 	if (-1 == pinDirection(pin, 1))
 		return (2);

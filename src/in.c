@@ -1,9 +1,22 @@
 #include "io.h"
+#include <signal.h>
 
 int pin;
 
+void sighandle_int(int sig)
+{
+	//printf("I'm unexporting pins\n");
+	if (pinUnexport(pin) == -1){
+		printf("Failed\n");
+		fflush(stdout);
+		exit(EXIT_FAILURE);
+	}
+	exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sighandle_int);
 
 	if (argc <= 1)
 		return -1;
@@ -16,7 +29,6 @@ int main(int argc, char *argv[])
 	 */
 	if (-1 == pinExport(pin))
 		return (1);
-
 	/*
 	 * Set GPIO directions
 	 */
@@ -32,10 +44,11 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		int cur = pinRead(pin);
-		//printf("%d = %d\n", cur, msg.state);
 
 		if (msg.state != cur)
 		{
+
+			//printf("%d = %d\n", cur, msg.state);
 			msg.state = cur;
 			send(msgid, &msg, sizeof(msg));
 		}

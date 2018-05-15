@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
 		for (int i = 0; i < N; i++)
 		{
-			printf("%d ", values.state[i]);
+			//printf("%d ", values.state[i]);
 			msg.pin = pins[i]; // Convert pin to phisical number
 			msg.state = values.state[i];
 

@@ -12,63 +12,41 @@
 
 static int pinExport(int pin)
 {
-#define BUFFER_MAX 3
-	char buffer[BUFFER_MAX];
-	ssize_t bytes_written;
-	int fd;
+	FILE* fd;
 
-	fd = open("/sys/class/gpio/export", O_WRONLY);
-	if (-1 == fd)
-	{
-		fprintf(stderr, "Failed to open export for writing!\n");
-		return (-1);
-	}
-
-	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
-	write(fd, buffer, bytes_written);
-	close(fd);
-	return (0);
-
-	/*int fd;
-
-	fd = open("/sys/class/gpio/export", O_WRONLY);
-	if (-1 == fd)
+	fd = fopen("/sys/class/gpio/export", "w");
+	if (NULL == fd)
 	{
 		fprintf(stderr, "%d: Failed to open export for writing!\n", pin);
 		return (-1);
 	}
 
-	char *value;
-	sprintf(value, "%d", pin);
-	if (-1 == write(fd, value, strlen(value)))
+	if (fprintf(fd, "%d", pin) <= 0)
 	{
 		fprintf(stderr, "%d: Failed to open export for writing!\n", pin);
 		return -1;
 	}
-	close(fd);
-	return (0);*/
+	fclose(fd);
+	return (0);
 }
 
 static int pinUnexport(int pin)
 {
-	int fd;
+	FILE* fd;
 
-	fd = open("/sys/class/gpio/unexport", O_WRONLY);
-	if (-1 == fd)
+	fd = fopen("/sys/class/gpio/unexport", "w");
+	if (NULL == fd)
 	{
 		fprintf(stderr, "%d: Failed to open unexport for writing!\n", pin);
 		return (-1);
 	}
 
-	char *value;
-	sprintf(value, "%d", pin);
-	if (-1 == write(fd, value, strlen(value)))
+	if (fprintf(fd, "%d", pin) <= 0)
 	{
 		fprintf(stderr, "%d: Failed to open unexport for writing!\n", pin);
 		return -1;
 	}
-
-	close(fd);
+	fclose(fd);
 	return (0);
 }
 
@@ -81,116 +59,68 @@ static int pinDirection(int pin, int mode)
 		dir = "out";
 	}
 
-#define DIRECTION_MAX 35
+	#define DIRECTION_MAX 35
 	char path[DIRECTION_MAX];
-	int fd;
-
+	FILE* fd;
 	sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd)
-	{
-		fprintf(stderr, "%d: Failed to open gpio direction for writing!\n", pin);
-		return (-1);
-	}
+	do {
+		fd = fopen(path, "w");
+		usleep(100000);
+	} while (fd == NULL);
 
-	if (-1 == write(fd, dir, strlen(dir)))
-	{
-		fprintf(stderr, "%d: Failed to set direction!\n", pin);
-		return (-1);
-	}
-
-	close(fd);
-	return (0);
-	/*	int fd;
-
-	char *path;
-	sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
-
-	fd = open(path, O_WRONLY);
-
-	if (-1 == fd)
-	{
-		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
-		return (-1);
-	}
-	if (-1 == write(fd, "out", 3))
+	if (fprintf(fd, dir) <= 0)
 	{
 		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
 		return -1;
 	}
-
-	close(fd);
-	return (0);*/
+	fclose(fd);
+	return (0);
 }
 
 static int pinRead(int pin)
 {
-	char path[23988];
-	char value[1];
-	int fd;
-
+	
+	#define DIRECTION_MAX 35
+	char path[DIRECTION_MAX];
+	FILE* fd;
 	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
+	fd = fopen(path, "r");
 
-	fd = open(path, O_RDONLY);
-
-	if (-1 == fd)
-	{
+	if (fd == NULL){
 		fprintf(stderr, "%d: Failed to open gpio value for reading!\n", pin);
 		return (-1);
 	}
+	char* l;
+    size_t size = 10;
+    l = (char *)malloc(size * sizeof(char));
 
-	if (-1 == read(fd, value, 1))
+	if (getline(&l,&size,fd) <= 0)
 	{
-		fprintf(stderr, "%d: Failed to read\n", pin);
-		return (-1);
+		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
+		return -1;
 	}
-
-	close(fd);
-	return (atoi(value));
+	fclose(fd);
+	return (atoi(l));
 }
 
 static int pinWrite(int pin, int value)
 {
-	static const char s_values_str[] = "01";
-
-	char path[40];
-	int fd;
-
+	#define DIRECTION_MAX 35
+	char path[DIRECTION_MAX];
+	FILE* fd;
 	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd)
-	{
-		fprintf(stderr, "Failed to open gpio value for writing!\n");
+	fd = fopen(path, "w");
+
+	if (fd == NULL){
+		fprintf(stderr, "%d: Failed to open gpio value for writing!\n", pin);
 		return (-1);
 	}
 
-	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1))
+	if (fprintf(fd, "%d",value) <= 0)
 	{
-		fprintf(stderr, "Failed to write value!\n");
-		return (-1);
+		fprintf(stderr, "%d: Failed to open direction for writing!\n", pin);
+		return -1;
 	}
-
-	close(fd);
+	fclose(fd);
 	return (0);
-	/*int fd;
-
-	char path[23988];
-	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
-
-	fd = open(path, O_WRONLY);
-	if (-1 == fd)
-	{
-		fprintf(stderr, "%d: Failed to open file for writing!\n", pin);
-		return -1;
-	}
-
-	char *str;
-	sprintf(str, "%d", value);
-	if (-1 == write(fd, &str, strlen(str)))
-	{
-		fprintf(stderr, "%d: Failed to open pin for writing!\n", pin);
-		return -1;
-	}
-	close(fd);
-	return (0);*/
 }
