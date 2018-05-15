@@ -7,11 +7,9 @@
 #include "msg_queue.h"
 
 #define PATH "../cfg/in_config"
-#define N 8
+int N = 8;
 
-// 0-5 eggs
-// 6-7 storage
-int pins[N];
+int *pins;
 swbuffer values;
 int in_id;
 
@@ -26,6 +24,15 @@ void sighandle_int(int sig)
 int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandle_int);
+
+    if(argc != 2){
+        printf("Invalid number of parameters");
+        return 1;
+    }
+
+    N = atoi(argv[1]) + 2; //N bit output + 2 bit for storage
+	pins = (int*) malloc(N * sizeof(int));
+
 	FILE *pinfile;
 
 	char *line = NULL;

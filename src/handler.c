@@ -22,13 +22,19 @@ void sighandle_int(int sig)
 int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandle_int);
-	for (int i = 0; i < 2; i++)
+
+    if(argc != 2){
+        printf("Invalid number of parameters");
+        return 1;
+    }
+
+    for (int i = 0; i < 2; i++)
 	{
 		//fork the input and output handlers
 		pid_t pid = fork();
 		if (pid == 0)
 		{
-			char *args[] = {i ? "./out_handle" : "./in_handle", NULL};
+			char *args[] = {i ? "./out_handle" : "./in_handle", argv[1], NULL};
 			execvp(args[0], args);
 		}
 	}

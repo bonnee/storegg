@@ -7,9 +7,10 @@
 #include "msg_queue.h"
 
 #define PATH "../cfg/out_config"
-#define N 8
 
-int pins[N];
+int N = 8;
+
+int *pins;
 int out_id;
 
 void sighandle_int(int sig)
@@ -23,6 +24,15 @@ void sighandle_int(int sig)
 int main(int argc, char *argv[])
 {
 	signal(SIGINT, sighandle_int);
+
+    if(argc != 2){
+        printf("Invalid number of parameters");
+        return 1;
+    }
+
+    N = atoi(argv[1]) + 2; //N bit output + 2 bit for storage
+	pins = (int*) malloc(N * sizeof(int));
+
 
 	FILE *pinfile;
 
@@ -72,15 +82,6 @@ int main(int argc, char *argv[])
 		swbuffer values;
 
 		receive(handler_id, &values, sizeof(values), 2);
-
-		//printf("%d", pins[1]);
-
-		//msg.pin = 8;
-		//msg.state = values;
-		//printf("out_handle: %d\n", out_id);
-		fflush(stdout);
-
-		//printf("senddemmerda %d\n", send(out_id, &msg, sizeof(msg)));
 
 		for (int i = 0; i < N; i++)
 		{

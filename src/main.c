@@ -8,7 +8,7 @@
 
 int main(int argc, char const *argv[])
 {
-    if(argc!=2){
+    if(argc != 2){
         printf("Invalid number of parameters");
         return 1;
     }
@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
     size_t size = 10;
     l = (char *)malloc(size * sizeof(char));
     while(!feof(f)){
-        getline(&l,&size,f);
+        getline(&l, &size, f);
         lines++;
     }
 
