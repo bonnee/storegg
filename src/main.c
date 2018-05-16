@@ -39,7 +39,6 @@ int main(int argc, char const *argv[])
 		sprintf(str, "%d", n_eggs);
 
 		char *args[] = {"./handler", str, NULL};
-        printf("Sono il figlio");
 		execvp(args[0], args);
     }
 

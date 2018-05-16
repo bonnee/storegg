@@ -74,14 +74,6 @@ int main(int argc, char *argv[])
 		//calculates the output array
 		calc_output(values.state,sendvalues.state);
 
-		//print the calculated array to debug it easily
-		printf("output array: ");
-		for (int i = 0; i < N; i++)
-		{
-			printf("%d ", sendvalues.state[i]);
-		}
-		printf("\n");
-
 		// send the output array to the out_handle
 		send(msgid, &sendvalues, sizeof(sendvalues));
 	}
