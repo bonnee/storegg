@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
 	//Error, it means that there is no pin number passed as parameter
 	if (argc <= 1)
-		return -1;
+		return 3;
 
 	//converts the argument of the function into an int number
 	pin = atoi(argv[1]);

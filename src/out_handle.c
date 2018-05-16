@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	if (NULL == pinfile)
 	{
 		printf("No config\n");
-		return -1;
+		return 2;
 	}
 
 	for (int i = 0; i < N; i++) // Read out_config
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	if(fclose(pinfile) == -1)
 	{
 		printf("Failed to close file");
-		return -1;
+		return 3;
 	}
 
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 		if (pid < 0) 
 		{
 			printf("Failed to fork the processes");
-			return -1;
+			return 4;
 		}
 		if (pid == 0)
 		{
@@ -79,7 +79,10 @@ int main(int argc, char *argv[])
 			sprintf(str, "%d", pins[i]);
 			//passes the number of pin as input in order to know which pin it's referring to
 			char *args[] = {"./out", str, NULL};
-			execvp(args[0], args);
+			if(execvp(args[0], args)== -1)
+        	{
+            	return 5;
+        	}
 		}
 	}
 

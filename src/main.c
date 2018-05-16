@@ -39,7 +39,10 @@ int main(int argc, char const *argv[])
 		sprintf(str, "%d", n_eggs);
 
 		char *args[] = {"./handler", str, NULL};
-		execvp(args[0], args);
+		if(execvp(args[0], args)== -1)
+        {
+            return 3;
+        };
     }
 
     wait(NULL);

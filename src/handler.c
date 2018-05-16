@@ -47,13 +47,16 @@ int main(int argc, char *argv[])
 		if (pid < 0) 
 		{
 			printf("Failed to fork the processes");
-			return -1;
+			return 3;
 		}
 		if (pid == 0)
 		{
 			//if it is a child process, then it calls the two executables (one process each)
 			char *args[] = {i ? "./out_handle" : "./in_handle", argv[1], NULL};
-			execvp(args[0], args);
+			if(execvp(args[0], args)== -1)
+      {
+        return 4;
+      };
 		}
 	}
 
