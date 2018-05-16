@@ -54,12 +54,8 @@ int main(int argc, char *argv[])
 			msg.state = cur;
 			send(msgid, &msg, sizeof(msg));
 		}
-		usleep(100000); // It's need not to kill CPU 
+		usleep(100000); // It's need not to kill CPU
 	}
-
-	//in teoria questa parte di codice è inutile, non arriverà mai
-	if (-1 == pinUnexport(pin))
-		return (4);
 
 	return (0);
 }

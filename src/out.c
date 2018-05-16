@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
 
 	//converts the argument of the function into an int number
 	pin = atoi(argv[1]);
-	//printf("Pin: %d\n", pin);
 
 	//Enable GPIO pins
 	if (-1 == pinExport(pin))
@@ -43,14 +42,9 @@ int main(int argc, char *argv[])
 	{
 		//receives the message of the correspondent pin from the output queue
 		receive(msgid, &msg, sizeof(msg), pin);
-		//printf("%d received %d: %d\n", pin, msg.pin, msg.state);
 		//writes the value received in the right output pin
 		pinWrite(pin, msg.state);
 	}
-
-	//stessa cosa di in.c qua
-	if (-1 == pinUnexport(pin))
-		return (4);
 
 	return (0);
 }

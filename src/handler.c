@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if(N > MAX_NUM_EGGS){
-		printf("Number of eggs to high!");
+		printf("Number of eggs too high!");
 		return 2;
 	}
 
@@ -70,14 +70,6 @@ int main(int argc, char *argv[])
 		swbuffer sendvalues;
 		//type=2 to be received only by out_handle
 		sendvalues.type = 2;
-
-		//stampa inutile che dobbiamo togliere
-		/*printf("handler: ");
-		for (int i = 0; i < N; i++)
-		{
-			printf("%d ", values.state[i]);
-		}
-		printf("\n");*/
 
 		//calculates the output array
 		calc_output(values.state,sendvalues.state);

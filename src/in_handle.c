@@ -111,8 +111,6 @@ int main(int argc, char *argv[])
 		//sends the input array to the handler through the handler queue
 		send(handler_id, &values, sizeof(values));
 
-		//non ricordo cosa facesse questa print
-		//printf("receive %ld: %d\n", msg.pin, msg.state);
 	}
 
 	//the parent process waits till the child processes are done
