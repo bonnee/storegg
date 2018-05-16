@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	message msg;
 	//set the message type and the value (reading the value of the pin)
 	msg.pin = pin;
-	msg.state = pinRead(pin);
+	msg.state = 0;
 
 	//creates the input queue to communicate with the in_handle
 	int msgid = create_id(1);
