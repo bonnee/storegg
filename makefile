@@ -21,7 +21,7 @@ out_handle:
 	cd ./bin && gcc -o out_handle ../src/out_handle.c ../src/msg_queue.c
 
 handler:
-	cd ./bin && gcc -o handler ../src/handler.c ../src/msg_queue.c
+	cd ./bin && gcc -o handler ../src/handler.c ../src/msg_queue.c ../src/logic.c
 
 build: creadirectory all
 
