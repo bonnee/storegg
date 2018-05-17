@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
 
 		for (int i = 0; i < N; i++)
 		{
+			printf("%d ",values.state[i]);
 			msg.pin = pins[i]; // Converts pin to phisical number, it sets the type of the message equal to the pin number
 			msg.state = values.state[i]; //sets the pin value reading the output array
 			//sends the message to the singles out processes through the output queue
