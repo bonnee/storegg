@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 	//controls if the n° of parameters is correct
     if(argc != 2){
-        printf("Invalid number of parameters");
+        printf("Invalid number of parameters\n");
         return 1;
     }
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if(N > MAX_NUM_EGGS){
-		printf("Number of eggs too high!");
+		printf("Number of eggs too high!\n");
 		return 2;
 	}
 
@@ -46,17 +46,16 @@ int main(int argc, char *argv[])
 		pid_t pid = fork();
 		if (pid < 0) 
 		{
-			printf("Failed to fork the processes");
+			printf("Failed to fork the processes\n");
 			return 3;
 		}
 		if (pid == 0)
 		{
 			//if it is a child process, then it calls the two executables (one process each)
 			char *args[] = {i ? "./out_handle" : "./in_handle", argv[1], NULL};
-			if(execvp(args[0], args)== -1)
-      {
-        return 4;
-      };
+			if(execvp(args[0], args)== -1) {
+        		return 4;
+      		};
 		}
 	}
 

@@ -21,7 +21,17 @@ int create_id(int id_queue)
 		printf("Wrong id_queue\n");
 		return -1;
 	}
-
+	/*	// da testare con raspberry
+	key_t f_val = ftok(file, 1);
+	if (f_val == -1) {
+		// gestibile con errno, volendo, e anche il msgget
+	}
+	int m_val = msgget(f_val, 0666 | IPC_CREAT);
+	if (m_val == -1) {
+		// gestione
+	}
+	return m_val;
+	*/
 	return msgget(ftok(file, 1), 0666 | IPC_CREAT);
 }
 

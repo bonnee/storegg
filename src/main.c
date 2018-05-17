@@ -9,7 +9,7 @@
 int main(int argc, char const *argv[])
 {
     if(argc != 2){
-        printf("Invalid number of parameters");
+        printf("Invalid number of parameters\n");
         return 1;
     }
 
@@ -30,18 +30,24 @@ int main(int argc, char const *argv[])
     lines = lines - 2;
 
     if(n_eggs != lines) {
-        printf("Not enough pins");
+        printf("Wrong number of pins\n");
         return 2;
     }
 
-    if(fork()==0){
+    pid_t f_val = fork();
+    if (f_val < 0) {
+        printf("Can't fork handler\n");
+        return 3;
+    }
+
+    if (f_val == 0) {
         char str[2];
 		sprintf(str, "%d", n_eggs);
 
 		char *args[] = {"./handler", str, NULL};
 		if(execvp(args[0], args)== -1)
         {
-            return 3;
+            return 4;
         };
     }
 
