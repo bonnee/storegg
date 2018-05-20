@@ -96,6 +96,8 @@ int main(int argc, char *argv[])
 
 	values.type = 1;
 
+	printf("in_handle ready.\n");
+
 	while (1)
 	{
 		message msg;

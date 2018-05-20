@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 
 	message msg;
 
+	printf("out_handle ready.\n");
 	while (1)
 	{
 		swbuffer values;

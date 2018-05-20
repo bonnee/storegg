@@ -8,6 +8,8 @@
 
 int main(int argc, char const *argv[])
 {
+    printf("storegg loading...\n");
+    
     if(argc != 2){
         printf("Invalid number of parameters\n");
         return 1;

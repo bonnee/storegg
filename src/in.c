@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
 		if (msg.state != cur)
 		{
-			//printf("pin %d: %d\n",pin,msg.state);
+			printf("pin %d: %d\n",pin,msg.state);
 			//if the value changes then it creates a message and sends it
 			msg.state = cur;
 			send(msgid, &msg, sizeof(msg));
