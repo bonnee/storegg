@@ -62,6 +62,28 @@ int main(int argc, char *argv[])
 	//creates the queue to communicate with the two handlers
 	msgid = create_id(2);
 
+	//make the led blinking for one second
+	int value = 0;
+	swbuffer initVal;
+	//type=2 to be received only by out_handle
+	initVal.type = 2;
+
+	for(int times = 0; times < 2; times++){
+		//chenge the led state
+		value = !value;
+
+		//assign every led the new state
+		for(int pin = 0; pin < N; pin++){
+			initVal.state[pin] = value;
+		}
+
+		// send the output array to the out_handle
+		send(msgid, &initVal, sizeof(initVal));
+
+		//wait one second to let the user see the led
+		sleep(1);
+	}
+
 	while (1)
 	{
 		swbuffer values;
@@ -74,7 +96,7 @@ int main(int argc, char *argv[])
 		sendvalues.type = 2;
 
 		//calculates the output array
-		calc_output(values.state,sendvalues.state);
+		calc_output(values.state, sendvalues.state);
 
 		// send the output array to the out_handle
 		send(msgid, &sendvalues, sizeof(sendvalues));
