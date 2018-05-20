@@ -1,35 +1,37 @@
-.DEFAULT_GOAL := build
-.PHONY: build clean default
+CC = gcc
+CFLAGS  = -g -Wall
 
-default: build;
+.PHONY: build clean default mkdir
 
-all: in out in_handle out_handle handler main
+default: build
 
-main: 
-	cd ./bin && gcc -o main ../src/main.c
+build: mkdir all
 
-in: 
-	cd ./bin && gcc -o in ../src/in.c ../src/io.c ../src/msg_queue.c
+mkdir:
+	@mkdir -p bin/
 
-out: 
-	cd ./bin && gcc -o out ../src/out.c ../src/io.c ../src/msg_queue.c
+all: bin/main bin/handler bin/in_handle bin/out_handle bin/in bin/out
 
-in_handle:
-	cd ./bin && gcc -o in_handle ../src/in_handle.c ../src/msg_queue.c
+bin/%.o: src/%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-out_handle:
-	cd ./bin && gcc -o out_handle ../src/out_handle.c ../src/msg_queue.c
+bin/main: bin/main.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-handler:
-	cd ./bin && gcc -o handler ../src/handler.c ../src/msg_queue.c ../src/logic.c
+bin/handler: bin/handler.o bin/msg_queue.o bin/logic.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-build: creadirectory all
+bin/in_handle: bin/in_handle.o bin/msg_queue.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+bin/out_handle: bin/out_handle.o bin/msg_queue.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+bin/in: bin/in.o bin/io.o bin/msg_queue.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+bin/out: bin/out.o bin/io.o bin/msg_queue.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	@rm -rf bin
-
-creadirectory:
-	@mkdir -p ./bin
-
-
-
+	@rm -rf bin/
