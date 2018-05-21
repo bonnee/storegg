@@ -6,15 +6,15 @@ int create_id(int id_queue)
 	//depending on the number passed as parameter it uses a different file to create the key of the queue
 	if (id_queue == 0)
 	{
-		file = "../tmp/out";
+		file = OUT_FILE;
 	}
 	else if (id_queue == 1)
 	{
-		file = "../tmp/in";
+		file = IN_FILE;
 	}
 	else if (id_queue == 2)
 	{
-		file = "../tmp/handler";
+		file = HANDLER_FILE;
 	}
 	else
 	{
@@ -23,17 +23,18 @@ int create_id(int id_queue)
 	}
 
 	key_t f_val = ftok(file, 1);
-	if (f_val == -1) {
+	if (f_val == -1)
+	{
 		printf("Error in creating the key\n");
 		return -1;
 	}
 	int m_val = msgget(f_val, 0666 | IPC_CREAT);
-	if (m_val == -1) {
+	if (m_val == -1)
+	{
 		printf("Error in creating the ID of the queue\n");
 		return -1;
 	}
 	return m_val;
-	//return msgget(ftok(file, 1), 0666 | IPC_CREAT);
 }
 
 //it deletes the msg queue specified as argument
@@ -45,11 +46,8 @@ int clear_queue(int key)
 		printf("Failed to delete queue");
 		return -1;
 	}
-	else
-	{
-		return res;
-	}
-	//return msgctl(key, IPC_RMID, NULL);
+
+	return res;
 }
 
 //function that wraps the send for the message queue

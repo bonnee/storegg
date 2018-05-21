@@ -7,10 +7,13 @@
 #include <stdio.h>
 
 #define MAX_NUM_EGGS 20
+#define OUT_FILE "../src/queue/out"
+#define IN_FILE "../src/queue/in"
+#define HANDLER_FILE "../src/queue/handler"
 
 typedef struct hw_buffer
 {
-	long pin; // physical pin
+	long pin;  // physical pin
 	int state; //value, bit 1/0
 } message;
 
