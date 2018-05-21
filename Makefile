@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS  = -g -Wall
+CFLAGS  = -Wall
 
 .PHONY: build clean default mkdir
 
