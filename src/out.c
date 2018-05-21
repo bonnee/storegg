@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
 	if (-1 == pinDirection(pin, 1))
 		return (2);
 
-	int status = LOW;
-
 	//creates the output queue to communicate with the out_handle
 	int msgid = create_id(0);
 
