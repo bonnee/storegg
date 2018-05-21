@@ -7,8 +7,7 @@
 #include "msg_queue.h"
 #include "logic.h"
 
-int N = 8;
-
+int N;
 int msgid;
 
 //deletes and clears the messaque queue when exiting (ctrl+C)
@@ -26,36 +25,40 @@ int main(int argc, char *argv[])
 	signal(SIGINT, sighandle_int);
 
 	//controls if the n° of parameters is correct
-    if(argc != 2){
-        printf("Invalid number of parameters\n");
-        return 1;
-    }
+	if (argc != 4)
+	{
+		printf("Parameter error: given %d, expected 4\n", argc);
+		return 1;
+	}
 
 	//gets the number of eggs passed as a parameter
-	N = atoi(argv[1]);
+	N = atoi(argv[3]);
 
 	//Check if the number of eggs choosen by the user can be managed by the program
-	if(N > MAX_NUM_EGGS){
+	if (N > MAX_NUM_EGGS)
+	{
 		printf("Number of eggs too high!\n");
 		return 2;
 	}
 
-    for (int i = 0; i < 2; i++)
+	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
+	char *arg_out[] = {"./out_handle", argv[1], argv[3], NULL};
+
+	for (int i = 0; i < 2; i++)
 	{
 		//fork the input and output handlers
 		pid_t pid = fork();
-		if (pid < 0) 
+		if (pid < 0)
 		{
 			printf("Failed to fork the processes\n");
 			return 3;
 		}
 		if (pid == 0)
 		{
-			//if it is a child process, then it calls the two executables (one process each)
-			char *args[] = {i ? "./out_handle" : "./in_handle", argv[1], NULL};
-			if(execvp(args[0], args)== -1) {
-        		return 4;
-      		};
+			if ((i ? execvp(arg_out[0], arg_out) : execvp(arg_in[0], arg_in)) == -1)
+			{
+				return 4;
+			};
 		}
 	}
 
@@ -68,12 +71,14 @@ int main(int argc, char *argv[])
 	//type=2 to be received only by out_handle
 	initVal.type = 2;
 
-	for(int times = 0; times < 2; times++){
+	for (int times = 0; times < 2; times++)
+	{
 		//chenge the led state
 		value = !value;
 
 		//assign every led the new state
-		for(int pin = 0; pin < N; pin++){
+		for (int pin = 0; pin < N + 2; pin++)
+		{
 			initVal.state[pin] = value;
 		}
 
@@ -90,6 +95,13 @@ int main(int argc, char *argv[])
 
 		//receives the input array from the in_handle
 		receive(msgid, &values, sizeof(values), 1);
+
+		printf("in: ");
+		for (int i = 0; i < N + 2; i++)
+		{
+			printf("%d ", values.state[i]);
+		}
+		printf("\n");
 
 		swbuffer sendvalues;
 		//type=2 to be received only by out_handle
