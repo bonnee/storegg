@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	//controls if the n° of parameters is correct
 	if (argc != 4)
 	{
-		printf("Parameter error: given %d, expected 4\n", argc);
+		printf("Parameter error. Usage: ./handler in_config out_config n_eggs\n", argc);
 		return 1;
 	}
 
@@ -41,12 +41,14 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
+	// as there will be two processes for the in_handle and the out_handle we need two different
+	// buffers to pass as parameters of the execvp function
 	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
 	char *arg_out[] = {"./out_handle", argv[1], argv[3], NULL};
 
 	for (int i = 0; i < 2; i++)
 	{
-		//fork the input and output handlers
+		//forks the input and output handlers
 		pid_t pid = fork();
 		if (pid < 0)
 		{
@@ -54,6 +56,7 @@ int main(int argc, char *argv[])
 			return 3;
 		}
 		if (pid == 0)
+		// depending on the value of i we execute the two different handlers
 		{
 			if ((i ? execvp(arg_out[0], arg_out) : execvp(arg_in[0], arg_in)) == -1)
 			{
@@ -65,7 +68,7 @@ int main(int argc, char *argv[])
 	//creates the queue to communicate with the two handlers
 	msgid = create_id(2);
 
-	//make the led blinking for one second
+	//make the leds blink for one second
 	int value = 0;
 	swbuffer initVal;
 	//type=2 to be received only by out_handle

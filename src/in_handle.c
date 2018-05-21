@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	//controls if the n° of parameters is correct
 	if (argc != 3)
 	{
-		printf("Invalid number of parameters");
+		printf("Invalid number of parameters. Usage: ./in_handle in_config n_eggs\n");
 		return 1;
 	}
 

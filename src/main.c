@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string.h>
 
+// this directory will only exists if the program is run on a Raspberry 
 #define RASPI_PATH "/sys/firmware/devicetree/base/model"
 #define IN_CONFIG "../src/cfg/in_config"
 #define OUT_CONFIG "../src/cfg/out_config"
@@ -16,10 +17,16 @@ int detect_raspi()
     int raspi = 0;
     char *check_string = "Raspberry Pi";
 
+    //if this file opens it means we're working on a Raspberry, so we can use the gpio
     FILE *f = fopen(RASPI_PATH, "r");
+
+    if (f == NULL) {
+        printf("Error in opening the Raspberry file \n");
+        return 8;
+    }
+
     if (f)
     {
-
         size_t size = sizeof(check_string);
         char *l = (char *)malloc(size * sizeof(char));
 
@@ -41,9 +48,15 @@ int detect_raspi()
 
 int count_lines()
 {
+    //counting the lines of the in_config file to detect if there are enough pins
     int lines = 0;
 
     FILE *f = fopen(IN_CONFIG, "r");
+    if (f == NULL) {
+        printf("Error in opening the config file \n");
+        return 7;
+    }
+    
     if (f)
     {
         size_t size = 10;
@@ -57,7 +70,7 @@ int count_lines()
         free(l);
         fclose(f);
     }
-
+// subtracting the 2 storage's pins
     return lines - 2;
 }
 
@@ -65,9 +78,10 @@ int main(int argc, char const *argv[])
 {
     printf("storegg loading...\n");
 
+    // some checks before starting the real program
     if (argc != 2)
     {
-        printf("Invalid number of parameters\n");
+        printf("Invalid number of parameters. Usage: ./main n_eggs\n");
         return 1;
     }
 
@@ -86,6 +100,7 @@ int main(int argc, char const *argv[])
         return 2;
     }
 
+    // forking the child that will run the process handler and checking if the fork works
     pid_t f_val = fork();
     if (f_val < 0)
     {
@@ -95,6 +110,7 @@ int main(int argc, char const *argv[])
 
     if (f_val == 0)
     {
+        // passing as parameters of the handler the the config file and the number of eggs
         char egg_num[2];
         sprintf(egg_num, "%d", n_eggs);
 
@@ -105,6 +121,7 @@ int main(int argc, char const *argv[])
         };
     }
 
+    //the parent process waits till the child process is done
     wait(NULL);
     return 0;
 }
