@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	if (argc <= 1)
 		return 3;
 
-	//converts the argument of the function into an int number
+	//converts the argument of the program into an int number
 	pin = atoi(argv[1]);
 
 	//Enable GPIO pins

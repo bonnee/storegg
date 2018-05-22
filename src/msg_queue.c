@@ -21,13 +21,14 @@ int create_id(int id_queue)
 		printf("Wrong id_queue\n");
 		return -1;
 	}
-
+	// creating the unique key of the queue
 	key_t f_val = ftok(file, 1);
 	if (f_val == -1)
 	{
 		printf("Error in creating the key\n");
 		return -1;
 	}
+	// creates the queue
 	int m_val = msgget(f_val, 0666 | IPC_CREAT);
 	if (m_val == -1)
 	{
