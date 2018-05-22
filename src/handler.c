@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	//controls if the n° of parameters is correct
 	if (argc != 4)
 	{
-		printf("Parameter error. Usage: ./handler in_config out_config n_eggs\n", argc);
+		printf("Parameter error. Usage: ./handler in_config out_config n_eggs\n");
 		return 1;
 	}
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	//creates the queue to communicate with the two handlers
 	msgid = create_id(2);
 
-	//make the leds blink for one second
+	//makes the leds blink for one second
 	int value = 0;
 	swbuffer initVal;
 	//type=2 to be received only by out_handle
@@ -76,19 +76,19 @@ int main(int argc, char *argv[])
 
 	for (int times = 0; times < 2; times++)
 	{
-		//chenge the led state
+		//changes the led state
 		value = !value;
 
-		//assign every led the new state
+		//assigns to every led the new state
 		for (int pin = 0; pin < N + 2; pin++)
 		{
 			initVal.state[pin] = value;
 		}
 
-		// send the output array to the out_handle
+		// sends the output array to the out_handle
 		send(msgid, &initVal, sizeof(initVal));
 
-		//wait one second to let the user see the led
+		//waits one second to let the user see the led
 		sleep(1);
 	}
 
@@ -99,12 +99,12 @@ int main(int argc, char *argv[])
 		//receives the input array from the in_handle
 		receive(msgid, &values, sizeof(values), 1);
 
-		printf("in: ");
+		/*printf("in: ");
 		for (int i = 0; i < N + 2; i++)
 		{
 			printf("%d ", values.state[i]);
 		}
-		printf("\n");
+		printf("\n");*/
 
 		swbuffer sendvalues;
 		//type=2 to be received only by out_handle

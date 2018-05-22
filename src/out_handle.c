@@ -27,14 +27,13 @@ int main(int argc, char *argv[])
 	//controls if the n° of parameters is correct
 	if (argc != 3)
 	{
-		printf("Invalid number of parameters. Usage: ./out_handle out_config n_eggs\n");
+		printf("Parameter error. Usage: ./out_handle out_config n_eggs\n");
 		return 1;
 	}
 
 	N = atoi(argv[2]) + 2; //N bit output + 2 bit for storage
 	pins = (int *)malloc(N * sizeof(int));
 
-	//reads the numbers of output pins from a config file
 	FILE *pinfile;
 
 	char *line = NULL;
@@ -48,7 +47,8 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	for (int i = 0; i < N; i++) // Read out_config
+	//reads the numbers of output pins from out_config
+	for (int i = 0; i < N; i++) 
 	{
 		getline(&line, (size_t *)&len, pinfile);
 		//saves the numbers of pins in an array
@@ -90,23 +90,22 @@ int main(int argc, char *argv[])
 
 	message msg;
 
-	printf("out_handle ready.\n");
 	while (1)
 	{
 		swbuffer values;
 		//receives the message from the handler queue containing the output array
 		receive(handler_id, &values, sizeof(values), 2);
 
-		printf("out: ");
+		//printf("out: ");
 		for (int i = 0; i < N; i++)
 		{
-			printf("%d ", values.state[i]);
+			//printf("%d ", values.state[i]);
 			msg.pin = pins[i];			 // Converts pin to phisical number, it sets the type of the message equal to the pin number
 			msg.state = values.state[i]; //sets the pin value reading the output array
-			//sends the message to the singles out processes through the output queue
+			//sends the message to the single out processes through the output queue
 			send(out_id, &msg, sizeof(msg));
 		}
-		printf("\n");
+		//printf("\n");
 	}
 
 	//the parent process waits till the child processes are done

@@ -64,7 +64,7 @@ int pinDirection(int pin, int mode)
 	sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
 	do {
 		fd = fopen(path, "w");
-		usleep(100000);
+		usleep(100000); //waits to avoid concurrency of processes
 	} while (fd == NULL);
 
 	//write the direction into the direction file

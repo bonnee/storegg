@@ -28,14 +28,13 @@ int main(int argc, char *argv[])
 	//controls if the n° of parameters is correct
 	if (argc != 3)
 	{
-		printf("Invalid number of parameters. Usage: ./in_handle in_config n_eggs\n");
+		printf("Parameter error. Usage: ./in_handle in_config n_eggs\n");
 		return 1;
 	}
 
 	N = atoi(argv[2]) + 2; //N bit output + 2 bit for storage
 	pins = (int *)malloc(N * sizeof(int));
 
-	//reads the numbers of input pins from a config file
 	FILE *pinfile;
 
 	char *line = NULL;
@@ -49,7 +48,8 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	for (int i = 0; i < N; i++) // Read in_config
+	//reads the numbers of input pins from a config file
+	for (int i = 0; i < N; i++) 
 	{
 		getline(&line, (size_t *)&len, pinfile);
 		//saves the numbers of pins in an array
@@ -93,9 +93,8 @@ int main(int argc, char *argv[])
 	//creates the handler queue to communicate with the handler
 	int handler_id = create_id(2);
 
+	// type = 1 to be received only by the handler
 	values.type = 1;
-
-	printf("in_handle ready.\n");
 
 	while (1)
 	{
@@ -106,8 +105,7 @@ int main(int argc, char *argv[])
 		int index;
 
 		//parses the pin number position into an index of a new array
-		for (index = 0; index < N && pins[index] != msg.pin; index++)
-			;
+		for (index = 0; index < N && pins[index] != msg.pin; index++);
 
 		//sets the input array
 		values.state[index] = msg.state;
