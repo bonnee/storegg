@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
 	if (fclose(pinfile) == -1)
 	{
-		fprintf(stderr, "Failed to close file");
+		fprintf(stderr, "Failed to close file\n");
 		return 3;
 	}
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 		if (pid < 0)
 		{
-			fprintf(stderr, "Failed to fork the processes");
+			fprintf(stderr, "Failed to fork the processes\n");
 			return 4;
 		}
 		if (pid == 0)
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 			char *args[] = {"./in", str, NULL};
 			if (execvp(args[0], args) == -1)
 			{
-				fprintf(stderr, "Error executing process for pin %d", pins[i]);
+				fprintf(stderr, "Error executing process for pin %d\n", pins[i]);
 				return 5;
 			};
 		}

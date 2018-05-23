@@ -44,7 +44,7 @@ int clear_queue(int key)
 	int res = msgctl(key, IPC_RMID, NULL);
 	if (res < 0)
 	{
-		fprintf(stderr, "Failed to delete queue");
+		fprintf(stderr, "Failed to delete queue\n");
 		return -1;
 	}
 
@@ -57,7 +57,7 @@ int send(int key, const void *buf, size_t size)
 	int res = msgsnd(key, buf, size - sizeof(long), 0);
 	if (res < 0)
 	{
-		fprintf(stderr, "Failed to send message");
+		fprintf(stderr, "Failed to send message\n");
 		return -1;
 	}
 
@@ -70,7 +70,7 @@ ssize_t receive(int key, void *msg, size_t size, long filter)
 	int res = msgrcv(key, msg, size - sizeof(long), filter, 0);
 	if (res < 0)
 	{
-		fprintf(stderr, "Failed to receive message");
+		fprintf(stderr, "Failed to receive message\n");
 		return -1;
 	}
 
