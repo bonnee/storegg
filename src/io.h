@@ -6,8 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define LOW 0
-#define HIGH 1
+#define GPIO_PATH "/sys/class/gpio/"
 
 int pinExport(int pin);
 

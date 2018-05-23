@@ -4,7 +4,7 @@
 
 int pin;
 
-//when the process is closed, it unExports pins
+// Unexport pins before exiting
 void sighandle_int(int sig)
 {
 	if (pinUnexport(pin) == -1)
@@ -14,33 +14,34 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
-	//replaces the standard sigint handler
+	// Attach exit handler
 	signal(SIGINT, sighandle_int);
 
 	//Error, it means that there is no pin number passed as parameter
 	if (argc <= 1)
+	{
+		fprintf(stdout, "No parameter provided.\nUsage: %s PIN", argv[0]);
 		return 3;
+	}
 
-	//converts the argument of the program into an int number
 	pin = atoi(argv[1]);
 
-	//Enable GPIO pins
+	// Enable GPIO pin
 	if (-1 == pinExport(pin))
 		return (1);
 
-	//Set GPIO directions
+	// Set GPIO direction
 	if (-1 == pinDirection(pin, 1))
 		return (2);
 
-	//creates the output queue to communicate with the out_handle
+	// Message queue for handler process
 	int msgid = create_id(0);
 
 	message msg;
 	while (1)
 	{
-		//receives the message of the correspondent pin from the output queue
+		// Receives the message of the correspondent pin from the output queue
 		receive(msgid, &msg, sizeof(msg), pin);
-		//writes the value received in the right output pin
 		pinWrite(pin, msg.state);
 	}
 

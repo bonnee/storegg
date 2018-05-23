@@ -10,7 +10,7 @@ int N;
 int *pins;
 int out_id;
 
-//deletes and clears the messaque queue when exiting (ctrl+C)
+// deletes and clears the messaque queue when exiting (ctrl+C)
 void sighandle_int(int sig)
 {
 	printf("out_handle...");
@@ -21,13 +21,13 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
-	//replaces the standard sigint handler
+	// Attach exit handler
 	signal(SIGINT, sighandle_int);
 
-	//controls if the n° of parameters is correct
+	// Parameter check
 	if (argc != 3)
 	{
-		printf("Parameter error. Usage: ./out_handle out_config n_eggs\n");
+		fprintf(stderr, "Parameter error.\nUsage: %s OUT_CONFIG N_LEDS\n", argv[0]);
 		return 1;
 	}
 
@@ -39,25 +39,24 @@ int main(int argc, char *argv[])
 	char *line = NULL;
 	size_t len = 0;
 
-	//tries to open the out_config file
+	//tries to open out_config
 	pinfile = fopen(argv[1], "r");
 	if (NULL == pinfile)
 	{
-		printf("No config\n");
+		fprintf(stderr, "No config\n");
 		return 2;
 	}
 
-	//reads the numbers of output pins from out_config
-	for (int i = 0; i < N; i++) 
+	// reads the numbers of output pins from out_config
+	for (int i = 0; i < N; i++)
 	{
 		getline(&line, (size_t *)&len, pinfile);
-		//saves the numbers of pins in an array
 		pins[i] = atoi(line);
 	}
-	//tries to close the file where it's reading the pins' values
+
 	if (fclose(pinfile) == -1)
 	{
-		printf("Failed to close file");
+		fprintf(stderr, "Failed to close file");
 		return 3;
 	}
 
@@ -67,25 +66,28 @@ int main(int argc, char *argv[])
 
 		if (pid < 0)
 		{
-			printf("Failed to fork the processes");
+			fprintf(stderr, "Failed to fork the processes");
 			return 4;
 		}
 		if (pid == 0)
 		{
 			char str[2];
 			sprintf(str, "%d", pins[i]);
-			//passes the number of pin as input in order to know which pin it's referring to
+
+			// Pass hw pin number to child
 			char *args[] = {"./out", str, NULL};
 			if (execvp(args[0], args) == -1)
 			{
+				fprintf(stderr, "Error executing process for pin %d", pins[i]);
 				return 5;
 			}
 		}
 	}
 
-	//creates the output queue to communicate with the singles out_pins processes
+	// Message queue for hw processes
 	out_id = create_id(0);
-	//creates the handler queue to communicate with the handler
+
+	// Message queue for handler
 	int handler_id = create_id(2);
 
 	message msg;
@@ -93,22 +95,18 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		swbuffer values;
-		//receives the message from the handler queue containing the output array
+		// receives the message from the handler queue containing the output array
 		receive(handler_id, &values, sizeof(values), 2);
 
-		//printf("out: ");
 		for (int i = 0; i < N; i++)
 		{
-			//printf("%d ", values.state[i]);
-			msg.pin = pins[i];			 // Converts pin to phisical number, it sets the type of the message equal to the pin number
-			msg.state = values.state[i]; //sets the pin value reading the output array
-			//sends the message to the single out processes through the output queue
+			msg.pin = pins[i];
+			msg.state = values.state[i];
 			send(out_id, &msg, sizeof(msg));
 		}
-		//printf("\n");
 	}
 
-	//the parent process waits till the child processes are done
+	// the parent process waits till the child processes are done
 	wait(NULL);
 	return 0;
 }

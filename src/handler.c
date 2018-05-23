@@ -10,7 +10,7 @@
 int N;
 int msgid;
 
-//deletes and clears the messaque queue when exiting (ctrl+C)
+// deletes and clears the messaque queue when exiting (ctrl+C)
 void sighandle_int(int sig)
 {
 	printf("Exiting...");
@@ -21,13 +21,13 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
-	//replaces the standard sigint handler
+	// Attach exit handler
 	signal(SIGINT, sighandle_int);
 
-	//controls if the n° of parameters is correct
+	// Parameter check
 	if (argc != 4)
 	{
-		printf("Parameter error. Usage: ./handler in_config out_config n_eggs\n");
+		fprintf(stderr, "Parameter error.\nUsage: %s IN_CONFIG OUT_CONFIG N_EGGS\n", argv[0]);
 		return 1;
 	}
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if (N > MAX_NUM_EGGS)
 	{
-		printf("Number of eggs too high!\n");
+		fprintf(stderr, "Too much eggs!\n");
 		return 2;
 	}
 
@@ -48,15 +48,16 @@ int main(int argc, char *argv[])
 
 	for (int i = 0; i < 2; i++)
 	{
-		//forks the input and output handlers
+		// forks the input and output handlers
 		pid_t pid = fork();
 		if (pid < 0)
 		{
-			printf("Failed to fork the processes\n");
+			fprintf(stderr, "Failed to fork the processes\n");
 			return 3;
 		}
 		if (pid == 0)
 		// depending on the value of i we execute the two different handlers
+		// i=0 means in_handle; i=1 out_handle
 		{
 			if ((i ? execvp(arg_out[0], arg_out) : execvp(arg_in[0], arg_in)) == -1)
 			{
@@ -65,52 +66,41 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	//creates the queue to communicate with the two handlers
+	// creates the queue to communicate with the two handlers
 	msgid = create_id(2);
 
-	//makes the leds blink for one second
+	// Blink leds to signal program start
 	int value = 0;
 	swbuffer initVal;
-	//type=2 to be received only by out_handle
+	// type=2 to be received only by out_handle
 	initVal.type = 2;
 
 	for (int times = 0; times < 2; times++)
 	{
-		//changes the led state
 		value = !value;
 
-		//assigns to every led the new state
 		for (int pin = 0; pin < N + 2; pin++)
 		{
 			initVal.state[pin] = value;
 		}
 
-		// sends the output array to the out_handle
 		send(msgid, &initVal, sizeof(initVal));
-
-		//waits one second to let the user see the led
 		sleep(1);
 	}
+	// All ready
 
 	while (1)
 	{
 		swbuffer values;
 
-		//receives the input array from the in_handle
+		// receives the input array from the in_handle
 		receive(msgid, &values, sizeof(values), 1);
 
-		/*printf("in: ");
-		for (int i = 0; i < N + 2; i++)
-		{
-			printf("%d ", values.state[i]);
-		}
-		printf("\n");*/
-
 		swbuffer sendvalues;
-		//type=2 to be received only by out_handle
+		// type=2 to be received only by out_handle
 		sendvalues.type = 2;
 
-		//calculates the output array
+		// calculates the output array
 		calc_output(values.state, sendvalues.state);
 
 		// send the output array to the out_handle
@@ -119,4 +109,5 @@ int main(int argc, char *argv[])
 
 	//the parent process waits till the child processes are done
 	wait(NULL);
+	return 0;
 }

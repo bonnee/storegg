@@ -1,11 +1,11 @@
 #include "io.h"
- 
-//Ask the kernel to export the pin passed as parameter to userspace
+
+// "Enables" a pin
 int pinExport(int pin)
 {
-	FILE* fd;
+	FILE *fd;
 
-	//open a special file in the filesystem
+	// open a special file in the filesystem
 	fd = fopen("/sys/class/gpio/export", "w");
 	if (NULL == fd)
 	{
@@ -26,7 +26,7 @@ int pinExport(int pin)
 //Ask the kernel to reverse the export function
 int pinUnexport(int pin)
 {
-	FILE* fd;
+	FILE *fd;
 
 	//open a special file in the filesystem
 	fd = fopen("/sys/class/gpio/unexport", "w");
@@ -56,13 +56,14 @@ int pinDirection(int pin, int mode)
 		dir = "out";
 	}
 
-	#define DIRECTION_MAX 35
+#define DIRECTION_MAX 35
 	char path[DIRECTION_MAX];
-	FILE* fd;
+	FILE *fd;
 
 	//try to open a special file referring the specified gpio pin created by the export function
 	sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
-	do {
+	do
+	{
 		fd = fopen(path, "w");
 		usleep(100000); //waits to avoid concurrency of processes
 	} while (fd == NULL);
@@ -79,24 +80,25 @@ int pinDirection(int pin, int mode)
 
 //read the value of a specified pin, value: 0, 1
 int pinRead(int pin)
-{	
-	#define DIRECTION_MAX 35
+{
+#define DIRECTION_MAX 35
 	char path[DIRECTION_MAX];
-	FILE* fd;
+	FILE *fd;
 	//open a special file referring the specified gpio pin created by the export function
 	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
 	fd = fopen(path, "r");
 
-	if (fd == NULL){
+	if (fd == NULL)
+	{
 		fprintf(stderr, "%d: Failed to open gpio value for reading!\n", pin);
 		return (-1);
 	}
-	char* l;
-    size_t size = 10;
-    l = (char *)malloc(size * sizeof(char));
+	char *l;
+	size_t size = 10;
+	l = (char *)malloc(size * sizeof(char));
 
 	//read the value of the gpio pin
-	if (getline(&l,&size,fd) <= 0)
+	if (getline(&l, &size, fd) <= 0)
 	{
 		fprintf(stderr, "%d: Failed to read direction!\n", pin);
 		return -1;
@@ -108,20 +110,21 @@ int pinRead(int pin)
 //write the value of a specified pin, value: 0, 1
 int pinWrite(int pin, int value)
 {
-	#define DIRECTION_MAX 35
+#define DIRECTION_MAX 35
 	char path[DIRECTION_MAX];
-	FILE* fd;
+	FILE *fd;
 	//open a special file referring the specified gpio pin created by the export function
 	sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
 	fd = fopen(path, "w");
 
-	if (fd == NULL){
+	if (fd == NULL)
+	{
 		fprintf(stderr, "%d: Failed to open gpio value for writing!\n", pin);
 		return (-1);
 	}
 
 	//read the value for the gpio pin
-	if (fprintf(fd, "%d",value) <= 0)
+	if (fprintf(fd, "%d", value) <= 0)
 	{
 		fprintf(stderr, "%d: Failed to print pin value!\n", pin);
 		return -1;

@@ -18,21 +18,21 @@ int create_id(int id_queue)
 	}
 	else
 	{
-		printf("Wrong id_queue\n");
+		fprintf(stderr, "Wrong id_queue\n");
 		return -1;
 	}
 	// creating the unique key of the queue
 	key_t f_val = ftok(file, 1);
 	if (f_val == -1)
 	{
-		printf("Error in creating the key\n");
+		fprintf(stderr, "Error in creating the key\n");
 		return -1;
 	}
 	// creates the queue
 	int m_val = msgget(f_val, 0666 | IPC_CREAT);
 	if (m_val == -1)
 	{
-		printf("Error in creating the ID of the queue\n");
+		fprintf(stderr, "Error in creating the ID of the queue\n");
 		return -1;
 	}
 	return m_val;
@@ -44,7 +44,7 @@ int clear_queue(int key)
 	int res = msgctl(key, IPC_RMID, NULL);
 	if (res < 0)
 	{
-		printf("Failed to delete queue");
+		fprintf(stderr, "Failed to delete queue");
 		return -1;
 	}
 
@@ -57,7 +57,7 @@ int send(int key, const void *buf, size_t size)
 	int res = msgsnd(key, buf, size - sizeof(long), 0);
 	if (res < 0)
 	{
-		printf("Failed to send message");
+		fprintf(stderr, "Failed to send message");
 		return -1;
 	}
 
@@ -70,7 +70,7 @@ ssize_t receive(int key, void *msg, size_t size, long filter)
 	int res = msgrcv(key, msg, size - sizeof(long), filter, 0);
 	if (res < 0)
 	{
-		printf("Failed to receive message");
+		fprintf(stderr, "Failed to receive message");
 		return -1;
 	}
 

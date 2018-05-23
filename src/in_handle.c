@@ -11,10 +11,11 @@ int *pins;
 swbuffer values;
 int in_id;
 
-//deletes and clears the messaque queue when exiting (ctrl+C)
+// deletes and clears the messaque queue when exiting (ctrl+C)
 void sighandle_int(int sig)
 {
 	printf("in_handle...");
+	free(pins);
 	if (-1 == clear_queue(in_id))
 		exit(EXIT_FAILURE);
 	exit(EXIT_SUCCESS);
@@ -22,17 +23,17 @@ void sighandle_int(int sig)
 
 int main(int argc, char *argv[])
 {
-	//replaces the standard sigint handler
+	// Attach exit handler
 	signal(SIGINT, sighandle_int);
 
-	//controls if the n° of parameters is correct
+	// Parameter check
 	if (argc != 3)
 	{
-		printf("Parameter error. Usage: ./in_handle in_config n_eggs\n");
+		fprintf(stderr, "Parameter error.\nUsage: %s IN_CONFIG N_EGGS\n", argv[0]);
 		return 1;
 	}
 
-	N = atoi(argv[2]) + 2; //N bit output + 2 bit for storage
+	N = atoi(argv[2]) + 2; // N eggs + 2 bit for storage management
 	pins = (int *)malloc(N * sizeof(int));
 
 	FILE *pinfile;
@@ -40,57 +41,60 @@ int main(int argc, char *argv[])
 	char *line = NULL;
 	size_t len = 0;
 
-	//tries to open the in_config file
+	// tries to open in_config
 	pinfile = fopen(argv[1], "r");
 	if (NULL == pinfile)
 	{
-		printf("No config\n");
+		fprintf(stderr, "No config\n");
 		return 2;
 	}
 
-	//reads the numbers of input pins from a config file
-	for (int i = 0; i < N; i++) 
+	// reads the numbers of input pins
+	for (int i = 0; i < N; i++)
 	{
 		getline(&line, (size_t *)&len, pinfile);
-		//saves the numbers of pins in an array
 		pins[i] = atoi(line);
 	}
-	//tries to close the file where it's reading the pins' values
+
 	if (fclose(pinfile) == -1)
 	{
-		printf("Failed to close file");
+		fprintf(stderr, "Failed to close file");
 		return 3;
 	}
 
 	for (int i = 0; i < N; i++) // Create children for each pin
 	{
 		pid_t pid = fork();
+
 		if (pid < 0)
 		{
-			printf("Failed to fork the processes");
+			fprintf(stderr, "Failed to fork the processes");
 			return 4;
 		}
 		if (pid == 0)
 		{
 			char str[2];
 			sprintf(str, "%d", pins[i]);
-			//passes the number of pin as input in order to know which pin it's referring to
+
+			// Pass hw pin number to child
 			char *args[] = {"./in", str, NULL};
 			if (execvp(args[0], args) == -1)
 			{
+				fprintf(stderr, "Error executing process for pin %d", pins[i]);
 				return 5;
 			};
 		}
 	}
 
-	for (int i = 0; i < N; i++) // Initializes values
+	for (int i = 0; i < N; i++)
 	{
 		values.state[i] = 0;
 	}
 
-	//creates the input queue to communicate with the singles in_pins processes
+	// Message queue for hw processes
 	in_id = create_id(1);
-	//creates the handler queue to communicate with the handler
+
+	// Message queue for handler
 	int handler_id = create_id(2);
 
 	// type = 1 to be received only by the handler
@@ -99,22 +103,23 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		message msg;
-		//receives the message from the input queue containing the pins' values
+		// receives the message from the input queue containing the pins' new values
 		receive(in_id, &msg, sizeof(msg), 0);
 
 		int index;
 
-		//parses the pin number position into an index of a new array
-		for (index = 0; index < N && pins[index] != msg.pin; index++);
+		// Converts hw pin numbers into logical pin numbers
+		for (index = 0; index < N && pins[index] != msg.pin; index++)
+			;
 
-		//sets the input array
+		// sets the input array
 		values.state[index] = msg.state;
 
-		//sends the input array to the handler through the handler queue
+		// sends the input array to the handler
 		send(handler_id, &values, sizeof(values));
 	}
 
-	//the parent process waits till the child processes are done
+	// the parent process waits till the child processes are done
 	wait(NULL);
 	return 0;
 }
