@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	signal(SIGINT, sighandle_int);
 
 	//Error, it means that there is no pin number passed as parameter
-	if (argc <= 1)
+	if (argc != 1)
 	{
 		fprintf(stdout, "No parameter provided.\nUsage: %s PIN", argv[0]);
 		return 3;
