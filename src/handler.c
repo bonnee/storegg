@@ -7,7 +7,7 @@
 #include "msg_queue.h"
 #include "logic.h"
 
-int N;
+int N, N_LEDS;
 int msgid;
 
 // deletes and clears the messaque queue when exiting (ctrl+C)
@@ -17,6 +17,12 @@ void sighandle_int(int sig)
 	if (clear_queue(msgid) == -1)
 		exit(EXIT_FAILURE);
 	exit(EXIT_SUCCESS);
+}
+
+double get_binary_digits(double n)
+{
+	//return floor(log(n)/log(2)) + 1;
+	return 3;
 }
 
 int main(int argc, char *argv[])
@@ -31,8 +37,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	//gets the number of eggs passed as a parameter
 	N = atoi(argv[3]);
+	N_LEDS = get_binary_digits(N) + 5; // 5 for the storage
 
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if (N > MAX_NUM_EGGS)
@@ -41,10 +47,13 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
+	char *leds = malloc((sizeof(N_LEDS) / sizeof(int)) * sizeof(char));
+	sprintf(leds, "%d", N_LEDS);
+
 	// as there will be two processes for the in_handle and the out_handle we need two different
 	// buffers to pass as parameters of the execvp function
 	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
-	char *arg_out[] = {"./out_handle", argv[1], argv[3], NULL};
+	char *arg_out[] = {"./out_handle", argv[1], leds, NULL};
 
 	for (int i = 0; i < 2; i++)
 	{
