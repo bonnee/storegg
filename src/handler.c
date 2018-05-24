@@ -43,19 +43,19 @@ int main(int argc, char *argv[])
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if (N > MAX_NUM_EGGS)
 	{
-		fprintf(stderr, "Too much eggs!\n");
+		fprintf(stderr, "Too many eggs!\n");
 		return 2;
 	}
 
-	char leds = "hello crispo"; // Va inizializzato per usare sprintf
+	char leds[2];
 	sprintf(leds, "%d", N_LEDS);
 
-	printf("is equals: %d\n", leds == argv[3]);
+	//printf("is equals: %d\n", leds == argv[3]);
 
 	// as there will be two processes for the in_handle and the out_handle we need two different
 	// buffers to pass as parameters of the execvp function
-	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
-	char *arg_out[] = {"./out_handle", argv[1], argv[3], NULL}; // Va passato leds non argv[3]
+	char *arg_in[] = {"./in_handle", argv[2], leds, NULL};
+	char *arg_out[] = {"./out_handle", argv[1], leds, NULL}; 
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	// type=2 to be received only by out_handle
 	initVal.type = 2;
 
-	/*for (int times = 0; times < 2; times++)
+	for (int times = 0; times < 2; times++)
 	{
 		value = !value;
 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
 		send(msgid, &initVal, sizeof(initVal));
 		sleep(1);
-	}*/
+	}
 	// All ready
 
 	while (1)
