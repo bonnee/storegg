@@ -69,7 +69,7 @@ void calc_output(int *input, int *output)
 	//check to order eggs to storage
 	if (mag_min < 3 && num_eggs + mag_min < 6)
 	{								  //know exactly num storage eggs and need some other
-		int order_eggs = 5 - mag_min; //order eggs to make full storage
+		int order_eggs = 5 - mag_min; //order eggs to make full storage max(6 - num_eggs - mag_min,
 		num_to_bin(order_eggs, 3, 5, output);
 	}
 }

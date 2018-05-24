@@ -47,13 +47,15 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	char *leds = malloc((sizeof(N_LEDS) / sizeof(int)) * sizeof(char));
+	char leds = "hello crispo"; // Va inizializzato per usare sprintf
 	sprintf(leds, "%d", N_LEDS);
+
+	printf("is equals: %d\n", leds == argv[3]);
 
 	// as there will be two processes for the in_handle and the out_handle we need two different
 	// buffers to pass as parameters of the execvp function
 	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
-	char *arg_out[] = {"./out_handle", argv[1], leds, NULL};
+	char *arg_out[] = {"./out_handle", argv[1], argv[3], NULL}; // Va passato leds non argv[3]
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -84,7 +86,7 @@ int main(int argc, char *argv[])
 	// type=2 to be received only by out_handle
 	initVal.type = 2;
 
-	for (int times = 0; times < 2; times++)
+	/*for (int times = 0; times < 2; times++)
 	{
 		value = !value;
 
@@ -95,7 +97,7 @@ int main(int argc, char *argv[])
 
 		send(msgid, &initVal, sizeof(initVal));
 		sleep(1);
-	}
+	}*/
 	// All ready
 
 	while (1)
@@ -111,6 +113,12 @@ int main(int argc, char *argv[])
 
 		// calculates the output array
 		calc_output(values.state, sendvalues.state);
+
+		for (int i = 0; i < 8; i++)
+		{
+			printf("%d ", sendvalues.state[i]);
+		}
+		printf("\n");
 
 		// send the output array to the out_handle
 		send(msgid, &sendvalues, sizeof(sendvalues));

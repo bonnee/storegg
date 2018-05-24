@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 	{
 		// Receives the message of the correspondent pin from the output queue
 		receive(msgid, &msg, sizeof(msg), pin);
+		printf("%d: %d\n", pin, msg.state);
 		pinWrite(pin, msg.state);
 	}
 
