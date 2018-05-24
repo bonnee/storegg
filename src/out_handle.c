@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	N = atoi(argv[2]) + 2; //N bit output + 2 bit for storage
+	N = atoi(argv[2]);
 	pins = (int *)malloc(N * sizeof(int));
 
 	FILE *pinfile;

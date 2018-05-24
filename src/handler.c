@@ -40,6 +40,10 @@ int main(int argc, char *argv[])
 	N = atoi(argv[3]);
 	N_LEDS = get_binary_digits(N) + 5; // 5 for the storage
 
+	char leds[2];
+	sprintf(leds,"%d",N_LEDS);
+
+
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if (N > MAX_NUM_EGGS)
 	{
@@ -47,15 +51,10 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	char leds[2];
-	sprintf(leds, "%d", N_LEDS);
-
-	//printf("is equals: %d\n", leds == argv[3]);
-
 	// as there will be two processes for the in_handle and the out_handle we need two different
 	// buffers to pass as parameters of the execvp function
-	char *arg_in[] = {"./in_handle", argv[2], leds, NULL};
-	char *arg_out[] = {"./out_handle", argv[1], leds, NULL}; 
+	char *arg_in[] = {"./in_handle", argv[2], argv[3], NULL};
+	char *arg_out[] = {"./out_handle", argv[1], leds, NULL};
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -79,25 +78,6 @@ int main(int argc, char *argv[])
 
 	// creates the queue to communicate with the two handlers
 	msgid = create_id(2);
-
-	// Blink leds to signal program start
-	int value = 0;
-	swbuffer initVal;
-	// type=2 to be received only by out_handle
-	initVal.type = 2;
-
-	for (int times = 0; times < 2; times++)
-	{
-		value = !value;
-
-		for (int pin = 0; pin < N + 2; pin++)
-		{
-			initVal.state[pin] = value;
-		}
-
-		send(msgid, &initVal, sizeof(initVal));
-		sleep(1);
-	}
 	// All ready
 
 	while (1)
