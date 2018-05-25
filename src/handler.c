@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		// calculates the output array
-		calc_output(values.state, sendvalues.state);
+		calc_output(values.state, sendvalues.state, N, N_LEDS);
 
 		// send the output array to the out_handle
 		send(msgid, &sendvalues, sizeof(sendvalues));

@@ -27,24 +27,24 @@ void num_to_bin(int num, int n_bit, int ar_delay, int *array)
 	}
 }
 
-void calc_output(int *input, int *output)
+void calc_output(int *input, int *output, int max_egg, int max_out)
 {
 
 	//initialization
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < max_out; i++)
 	{
 		output[i] = 0;
 	}
 
 	int num_eggs = 0;
 	//count eggs
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < max_egg; i++)
 	{
 		num_eggs += input[i];
 	}
 
 	int mag_min = 0;
-	int start = 6;
+	int start = max_egg;
 	//count min eggs in storage
 	for (int i = start; i < start + 2; i++)
 	{
@@ -57,9 +57,9 @@ void calc_output(int *input, int *output)
 
 	// [bit 3-4]
 	//check to move eggs from storage
-	if (num_eggs < 6 && mag_min > 0)
+	if (num_eggs < max_egg && mag_min > 0)
 	{
-		int eggs_to_move = 6 - num_eggs;
+		int eggs_to_move = max_egg - num_eggs;
 		if (eggs_to_move > mag_min) //not enough in storage
 			eggs_to_move = mag_min;
 		num_to_bin(eggs_to_move, 2, 3, output);
@@ -67,10 +67,10 @@ void calc_output(int *input, int *output)
 
 	// [bit 5-7]
 	//check to order eggs to storage
-	if (mag_min < 3 && num_eggs + mag_min < 6)
+	if (mag_min < 3 && num_eggs + mag_min < max_egg)
 	{
 		int order_eggs; // know exactly num storage eggs and need some other
-		order_eggs = 6 - mag_min - num_eggs;
+		order_eggs = max_egg - mag_min - num_eggs;
 		num_to_bin(order_eggs, 3, 5, output);
 	}
 }
