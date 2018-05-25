@@ -68,12 +68,9 @@ void calc_output(int *input, int *output)
 	// [bit 5-7]
 	//check to order eggs to storage
 	if (mag_min < 3 && num_eggs + mag_min < 6)
-	{		
-		int order_eggs;					  	// know exactly num storage eggs and need some other
-		if (6 - mag_min - num_eggs == 6)	// cartone e magazzino vuoto, rischio di chiederne 6
-			order_eggs = 5 - mag_min;
-		else
-			order_eggs = 6 - mag_min - num_eggs;
+	{
+		int order_eggs; // know exactly num storage eggs and need some other
+		order_eggs = 6 - mag_min - num_eggs;
 		num_to_bin(order_eggs, 3, 5, output);
 	}
 }

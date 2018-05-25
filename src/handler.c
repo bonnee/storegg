@@ -41,8 +41,7 @@ int main(int argc, char *argv[])
 	N_LEDS = get_binary_digits(N) + 5; // 5 for the storage
 
 	char leds[2];
-	sprintf(leds,"%d",N_LEDS);
-
+	sprintf(leds, "%d", N_LEDS);
 
 	//Check if the number of eggs choosen by the user can be managed by the program
 	if (N > MAX_NUM_EGGS)
@@ -78,30 +77,45 @@ int main(int argc, char *argv[])
 
 	// creates the queue to communicate with the two handlers
 	msgid = create_id(2);
-	// All ready
 
+	// Blink leds to signal program start
+	int value = 0;
+	swbuffer initVal;
+	// type=2 to be received only by out_handle
+	initVal.type = 2;
+
+	for (int times = 0; times < 2; times++)
+	{
+		value = !value;
+
+		for (int pin = 0; pin < N + 2; pin++)
+		{
+			initVal.state[pin] = value;
+		}
+
+		send(msgid, &initVal, sizeof(initVal));
+		sleep(1);
+	}
+
+	swbuffer values, sendvalues;
+	sendvalues.type = 2; // to be received by out_handle
+
+	for (int i = 0; i < N_LEDS; i++)
+	{
+		values.state[i] = 0;
+	}
+
+	// All ready
 	while (1)
 	{
-		swbuffer values;
-
-		// receives the input array from the in_handle
-		receive(msgid, &values, sizeof(values), 1);
-
-		swbuffer sendvalues;
-		// type=2 to be received only by out_handle
-		sendvalues.type = 2;
-
 		// calculates the output array
 		calc_output(values.state, sendvalues.state);
 
-		for (int i = 0; i < 8; i++)
-		{
-			printf("%d ", sendvalues.state[i]);
-		}
-		printf("\n");
-
 		// send the output array to the out_handle
 		send(msgid, &sendvalues, sizeof(sendvalues));
+
+		// receives the input array from the in_handle
+		receive(msgid, &values, sizeof(values), 1);
 	}
 
 	//the parent process waits till the child processes are done
