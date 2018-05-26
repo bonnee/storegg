@@ -19,10 +19,16 @@ void sighandle_int(int sig)
 	exit(EXIT_SUCCESS);
 }
 
+//return the logarithm base 2
+int Log2n(int n)
+{
+  return (n > 1) ? 1 + Log2n(n / 2) : 0;
+}
+
+
 double get_binary_digits(double n)
 {
-	//return floor(log(n)/log(2)) + 1;
-	return 3;
+	return (double)(Log2n((int)n)+1);
 }
 
 int main(int argc, char *argv[])
