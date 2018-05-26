@@ -70,12 +70,10 @@ void calc_output(int *input, int *output, int max_egg, int max_out)
 	if (mag_min < 3 && num_eggs + mag_min < max_egg)
 	{
 		int order_eggs; // know exactly num storage eggs and need some other
-		if (mag_min + num_eggs == 0)
+		if ( max_egg - mag_min - num_eggs >= 5 )
 			order_eggs = 5;
-		else if (mag_min < 3) 
+		else // ordering a surplus egg if needed and possible
 			order_eggs = max_egg - mag_min - num_eggs + 1;
-		else 
-			order_eggs = max_egg - mag_min - num_eggs;
 		num_to_bin(order_eggs, 3, 5, output);
 	}
 }
