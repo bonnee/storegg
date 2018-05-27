@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#define GPIO_PATH "/sys/class/gpio/"
-
 int pinExport(int pin);
 
 int pinUnexport(int pin);

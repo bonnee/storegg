@@ -94,7 +94,7 @@ int pinRead(int pin)
 		return (-1);
 	}
 	char *l;
-	size_t size = 10;
+	size_t size = 1;
 	l = (char *)malloc(size * sizeof(char));
 
 	//read the value of the gpio pin

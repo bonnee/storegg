@@ -14,6 +14,7 @@ int out_id;
 void sighandle_int(int sig)
 {
 	printf("out_handle...");
+	free(pins);
 	if (-1 == clear_queue(out_id))
 		exit(EXIT_FAILURE);
 	exit(EXIT_SUCCESS);

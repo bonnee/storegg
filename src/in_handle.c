@@ -109,8 +109,7 @@ int main(int argc, char *argv[])
 		int index;
 
 		// Converts hw pin numbers into logical pin numbers
-		for (index = 0; index < N && pins[index] != msg.pin; index++)
-			;
+		for (index = 0; index < N && pins[index] != msg.pin; index++);
 
 		// sets the input array
 		values.state[index] = msg.state;
