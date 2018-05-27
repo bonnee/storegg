@@ -9,6 +9,18 @@ int my_pow(int x, int y)
 	return res;
 }
 
+//return the logarithm base 2
+int Log2n(int n)
+{
+  return (n > 1) ? 1 + Log2n(n / 2) : 0;
+}
+
+
+double get_binary_digits(double n)
+{
+	return (double)(Log2n((int)n)+1);
+}
+
 //function that convert decimal num to binary writing into an array with a specified delay from first pos
 void num_to_bin(int num, int n_bit, int ar_delay, int *array)
 {
